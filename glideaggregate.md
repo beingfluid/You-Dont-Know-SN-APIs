@@ -1,6 +1,6 @@
 # GlideAggregate
 
-&nbsp;&nbsp;&nbsp;&nbsp;Recently, I gave an interview, where I was asked to write a script in scripts - background to print priority-wise count of all incident records. And I could not do it. Primarily because I did never use this API for anything else but getting the COUNT and I was not sure about getting column values. So this is the time for learning what I don't not know and probably you do not as well. So let us dig what this API is.
+&nbsp;&nbsp;&nbsp;&nbsp;Recently, I gave an interview, where I was asked to write a script in scripts - background to print priority-wise count of all incident records. And I could not do it. Primarily because I did never use this API for anything else but getting the COUNT. So this is the time for doing what I don't not do and probably you do not as well. So let us dig what this API is.
 
 &nbsp;&nbsp;&nbsp;&nbsp;If you did not get what exactly I was asked to do, follow this steps:
 
@@ -102,17 +102,149 @@ if (grInc.next()) {
 
 &nbsp;&nbsp;&nbsp;&nbsp;In the above script,
 
-- addAggregate() method adds an aggregate to a database query.
+- addAggregate() method is used to ask needed information.
 - getAggregate() method gets the value of an aggregate from the current record.
 
-### Getting
+### Group records
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now, we can get back to our initial requirement:
+
+- Navigate to **Incident > All**
+  ![1](./images/1.png)
+- Right-click the column **Priority** and select **Group By Priority**.
+  ![2](./images/2.png)
+- Your window will display something like this:
+  ![3](./images/3.png)
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.groupBy("priority")
+grInc.addAggregate("COUNT")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Priority: {0} ({1})", [
+    grInc.getDisplayValue("priority"),
+    grInc.getAggregate("COUNT"),
+  ])
+}
+```
+
+![14](./images/14.png)
+
+- You should see the output similar to the following:
+
+![15](./images/15.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;In the above script, groupBy() provides the name of a field to use in grouping the aggregates. Alternatively, we can use the second parameter of addAggregate() method to achieve the same result:
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.addAggregate("COUNT", "priority")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Priority: {0} ({1})", [
+    grInc.getDisplayValue("priority"),
+    grInc.getAggregate("COUNT", "priority"),
+  ])
+}
+```
+
+![16](./images/16.png)
+
+- You should see the output similar to the following:
+
+![17](./images/17.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Let us modify our script to introduce another method, getTotal(), which returns the number of records by summing an aggregate:
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.addAggregate("COUNT", "priority")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Priority: {0} ({1})", [
+    grInc.getDisplayValue("priority"),
+    grInc.getAggregate("COUNT", "priority"),
+  ])
+}
+gs.info(grInc.getTotal("COUNT"))
+```
+
+![16](./images/18.png)
+
+- You should see the output similar to the following:
+
+![17](./images/19.png)
+
+### Group records
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now, we can get back to our initial requirement:
+
+---
 
 ### Where can you learn more?
 
 &nbsp;&nbsp;&nbsp;&nbsp;Here is some of the resources which will help provide examples and use cases to furthur enhance your understanding:
 
-- [ServiceNow Developer site documentation](https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server_legacy/c_GlideAggregateAPI)
+- [ServiceNow API documentation](https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server_legacy/c_GlideAggregateAPI)
 - [Understanding GlideAggregate by Andrew Barnes](https://developer.servicenow.com/blog.do?p=/post/glideaggregate/)
 - [ServiceNow product documentation](https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html)
 - [Observations When Using GlideAggregate with Steven Bell](https://www.youtube.com/watch?v=KmxsVbnAHxk)
-- [GlideAggregate Examples by GarrettNow](https://garrettnow.com/2014/02/28/glideaggregate-examples/)
+- [GlideAggregate Examples by GarrettNow](https://garrettnow.com/2014/02/28/glideaggregate-examples/) -[COUNTING WITH GLIDEAGGREGATE by BEN SWEETSER](https://developer.servicenow.com/blog.do?p=/post/training-glideagg/)
+
+//Draft
+
+https://www.thiscodeworks.com/tag/servicenow
+
+/_
+Client callable script include used for filtering sys_user lists
+to identify duplication email users
+name: duplicateEmail
+active: true
+client callabe: true
+_/
+function duplicateEmail() {
+var xx = new GlideAggregate('sys_user');
+xx.addAggregate('COUNT', 'email');
+xx.addHaving('COUNT', 'email', '>', '1');
+xx.query();
+var answer = new Array();
+while (xx.next()) {
+answer.push(xx.getValue('email'));
+}
+return answer;
+}
+
+http://snowscrip.blogspot.com/2019/03/background-scripts.html
+
+https://codecreative.io/blog/3-strategies-to-fix-nested-gliderecords/
+
+https://www.learnnowlab.com/advance-glide-script/
+
+- [How to get the Top 10 values from a table using the GlideAggregate function](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0745198)
+
+https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html
+
+https://learning.oreilly.com/library/view/mastering-servicenow-scripting/9781788627092/1123612d-e720-4b69-8805-8976af94a59c.xhtml
+
+https://snowunderground.com/blog/tag/glideaggregate
+
+https://pathwayscg.com/easily-identifying-duplicate-records-in-servicenow/
+
+https://finite-partners.com/byte-2-glideaggregate-examples/
+
+https://community.servicenow.com/community?id=community_article&sys_id=4184de51db982348a39a0b55ca961960
+
+https://books.google.co.in/books?id=TJjcDgAAQBAJ&pg=PA99&lpg=PA99&dq=GlideAggregate&source=bl&ots=oFFCZghU6j&sig=ACfU3U0u-D0AjDAf6bmZpXa9udzMXf7_TQ&hl=en&sa=X&ved=2ahUKEwjgyYCVwMX2AhUZrVYBHYrPDXw4MhDoAXoECBEQAw#v=onepage&q=GlideAggregate&f=false
+
+https://sn.jace.pro/getting-started/GlideAggregate/
+
+https://www.acorio.com/servicenow-hacks-to-try-home/
+
+https://shalamaster.com/GLIDEAGGREGATE.html

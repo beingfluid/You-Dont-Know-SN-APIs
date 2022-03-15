@@ -320,42 +320,119 @@ gs.info(grInc.getTotal("COUNT"))
 
 ```js
 var grInc = new GlideAggregate("incident")
-grInc.groupBy('priority')
-grInc.addAggregate('AVG', 'reassignment_count')
-grInc.addAggregate('AVG', 'sys_mod_count')
+grInc.groupBy("priority")
+grInc.addAggregate("AVG", "reassignment_count")
+grInc.addAggregate("AVG", "sys_mod_count")
 grInc.query()
 while (grInc.next()) {
-    gs.info("Incidents with priority {0} had {1} average modifications and {2} average reassignments" , [grInc.priority.getDisplayValue(), grInc.getAggregate('AVG', 'sys_mod_count'), grInc.getAggregate('AVG', 'reassignment_count')])
+  gs.info(
+    "Incidents with priority {0} had {1} average modifications and {2} average reassignments",
+    [
+      grInc.priority.getDisplayValue(),
+      grInc.getAggregate("AVG", "sys_mod_count"),
+      grInc.getAggregate("AVG", "reassignment_count"),
+    ]
+  )
 }
 ```
 
-![30](./images30.png)
+![30](./images/30.png)
 
 - You should see the output similar to the following:
 
 ![31](./images/31.png)
 
+#### addHaving()
 
-#### isHaving()
+&nbsp;&nbsp;&nbsp;&nbsp;addHaving() adds a "having" element to the aggregate. This method is extermely useful when you want to trigger something if record count crosses the defined threshold or to find duplicate records. You can find the awesome post on snprotips blog by Tim Woodruff [here](https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html) regarding same.
 
-&nbsp;&nbsp;&nbsp;&nbsp; This method is extermely useful when you want to trigger something if record count crosses the defined threshold or to find duplicate records. You can find the awesome post on snprotips blog by Tim Woodruff [here](https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html) regarding same.
+- Copy the below script to scripts - background, and click **Run script** button:
 
+```js
+var grInc = new GlideAggregate("incident")
+grInc.groupBy("priority")
+grInc.addAggregate("COUNT", "sys_mod_count")
+grInc.addHaving("COUNT", "sys_mod_count", ">", "10")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Incidents with priority {0} had {1} total modifications", [
+    grInc.priority.getDisplayValue(),
+    grInc.getAggregate("COUNT", "sys_mod_count"),
+  ])
+}
+```
+
+![32](./images/32.png)
+
+- You should see the output similar to the following:
+
+![33](./images/33.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;The above script outputs the total number of times particular priority incidents modified, if modification count is greater than 10. Feel free to change the value to something less like 1 or more like 30 and re-execute the script to observe the output.
+
+#### addTrend()
+
+&nbsp;&nbsp;&nbsp;&nbsp;addTrend() method adds a trend for a field. Let us modify the script to display number of incidents by months.
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.addTrend("opened_at", "month")
+grInc.addAggregate("COUNT")
+grInc.query()
+while (grInc.next()) {
+  gs.info("{0}: {1}", [grInc.getValue("timeref"), grInc.getAggregate("COUNT")])
+}
+```
+
+![34](./images/34.png)
+
+- You should see the output similar to the following:
+
+![35](./images/35.png)
+
+#### addTrend()
+
+&nbsp;&nbsp;&nbsp;&nbsp;addTrend() method adds a trend for a field. Let us modify the script to display number of incidents by months.
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.addTrend("opened_at", "month")
+grInc.addAggregate("COUNT")
+grInc.query()
+while (grInc.next()) {
+  gs.info("{0}: {1}, Query: {2}", [
+    grInc.getValue("timeref"),
+    grInc.getAggregate("COUNT"),
+    grInc.getQuery(),
+  ])
+}
+```
+
+![36](./images/36.png)
+
+- You should see the output similar to the following:
+
+![37](./images/37.png)
 
 ---
 
 ### How can you learn more?
 
 &nbsp;&nbsp;&nbsp;&nbsp;The best way to learn anything is hands-on exercises. Here is some of the resources which will help provide examples and use cases to furthur enhance your understanding:
+
 - [Observations When Using GlideAggregate with Steven Bell](https://www.youtube.com/watch?v=KmxsVbnAHxk)
 - [Community Code Snippets: Pondering the GlideAggregate Object (Advanced) by Steven Bell](https://community.servicenow.com/community?id=community_article&sys_id=4184de51db982348a39a0b55ca961960)
 - [Understanding GlideAggregate by Andrew Barnes](https://developer.servicenow.com/blog.do?p=/post/glideaggregate/)
 - [Counting with GlideAggregate by Ben Sweetser](https://developer.servicenow.com/blog.do?p=/post/training-glideagg/)
-- [ServiceNow product documentation](https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html)
+- [Detecting Duplicate Records with GlideAggregate by Tim Woodruff](https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html)
+- [How to get the Top 10 values from a table using the GlideAggregate function](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0745198)
 - [ServiceNow API documentation](https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server_legacy/c_GlideAggregateAPI)
-
-
-
-- [GlideAggregate Examples by GarrettNow](https://garrettnow.com/2014/02/28/glideaggregate-examples/) -[COUNTING WITH GLIDEAGGREGATE by BEN SWEETSER](https://developer.servicenow.com/blog.do?p=/post/training-glideagg/)
+- [ServiceNow product documentation](https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html)
+- [GlideAggregate Examples by GarrettNow](https://garrettnow.com/2014/02/28/glideaggregate-examples/)
 
 //Draft
 
@@ -386,8 +463,6 @@ https://codecreative.io/blog/3-strategies-to-fix-nested-gliderecords/
 
 https://www.learnnowlab.com/advance-glide-script/
 
-- [How to get the Top 10 values from a table using the GlideAggregate function](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0745198)
-
 https://learning.oreilly.com/library/view/mastering-servicenow-scripting/9781788627092/1123612d-e720-4b69-8805-8976af94a59c.xhtml
 
 https://snowunderground.com/blog/tag/glideaggregate
@@ -395,8 +470,6 @@ https://snowunderground.com/blog/tag/glideaggregate
 https://pathwayscg.com/easily-identifying-duplicate-records-in-servicenow/
 
 https://finite-partners.com/byte-2-glideaggregate-examples/
-
-
 
 https://books.google.co.in/books?id=TJjcDgAAQBAJ&pg=PA99&lpg=PA99&dq=GlideAggregate&source=bl&ots=oFFCZghU6j&sig=ACfU3U0u-D0AjDAf6bmZpXa9udzMXf7_TQ&hl=en&sa=X&ved=2ahUKEwjgyYCVwMX2AhUZrVYBHYrPDXw4MhDoAXoECBEQAw#v=onepage&q=GlideAggregate&f=false
 

@@ -310,6 +310,37 @@ gs.info(grInc.getTotal("COUNT"))
 
 &nbsp;&nbsp;&nbsp;&nbsp; You might have already noticed that the result is now sorted by the number of records.
 
+#### orderByAggregate()
+
+&nbsp;&nbsp;&nbsp;&nbsp; Another variation of orderBy() is orderByAggregate(), which orders the aggregates based on the specified aggregate and field. Let us slightly modify our script:
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.groupBy("priority")
+grInc.groupBy("state")
+grInc.addAggregate("COUNT", "priority")
+grInc.orderByAggregate("count", "priority")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Priority: {0} & State: {1} ({2})", [
+    grInc.getDisplayValue("priority"),
+    grInc.getDisplayValue("state"),
+    grInc.getAggregate("COUNT", "priority"),
+  ])
+}
+gs.info(grInc.getTotal("COUNT"))
+```
+
+![28](./images/28.png)
+
+- You should see the output similar to the following:
+
+![29](./images/29.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp; This method is extermely useful when you want to trigger something if record count crosses the defined threshold or to find duplicate records. You can find the awesome post on snprotips blog by Tim Woodruff [here](https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html) regarding same.
+
 ---
 
 ### Where can you learn more?
@@ -352,8 +383,6 @@ https://codecreative.io/blog/3-strategies-to-fix-nested-gliderecords/
 https://www.learnnowlab.com/advance-glide-script/
 
 - [How to get the Top 10 values from a table using the GlideAggregate function](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0745198)
-
-https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html
 
 https://learning.oreilly.com/library/view/mastering-servicenow-scripting/9781788627092/1123612d-e720-4b69-8805-8976af94a59c.xhtml
 

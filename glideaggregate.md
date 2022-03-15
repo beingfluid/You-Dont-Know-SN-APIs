@@ -310,34 +310,33 @@ gs.info(grInc.getTotal("COUNT"))
 
 &nbsp;&nbsp;&nbsp;&nbsp; You might have already noticed that the result is now sorted by the number of records.
 
-#### orderByAggregate()
+#### Count isn't the only function
 
-&nbsp;&nbsp;&nbsp;&nbsp; Another variation of orderBy() is orderByAggregate(), which orders the aggregates based on the specified aggregate and field. Let us slightly modify our script:
+&nbsp;&nbsp;&nbsp;&nbsp; So far we have seen some examples that utilizes COUNT for understanding GlideAggregate APIs, But Count is not the only thing that we can do with it. I would like to quote Andrew Barnes as is from his exteremely useful ServiceNow blog post "Understanding GlideAggregate" which can be found [here](https://developer.servicenow.com/blog.do?p=/post/glideaggregate/):
+
+> Count isn’t the only function we can perform with GlideAggregate. Average, Sum, Max, Min are handy when dealing with numbers. Our favorite example table incident has several useful fields that pure counts isn’t wildly useful. Our service desk might want to know the average number of times incidents were modified sys_mod_count or reassigned reassignment_count. The service desk owner can use this information to set a baseline, and then run this every month to see if changes have been an improvement or not.
 
 - Copy the below script to scripts - background, and click **Run script** button:
 
 ```js
 var grInc = new GlideAggregate("incident")
-grInc.groupBy("priority")
-grInc.groupBy("state")
-grInc.addAggregate("COUNT", "priority")
-grInc.orderByAggregate("count", "priority")
+grInc.groupBy('priority')
+grInc.addAggregate('AVG', 'reassignment_count')
+grInc.addAggregate('AVG', 'sys_mod_count')
 grInc.query()
 while (grInc.next()) {
-  gs.info("Priority: {0} & State: {1} ({2})", [
-    grInc.getDisplayValue("priority"),
-    grInc.getDisplayValue("state"),
-    grInc.getAggregate("COUNT", "priority"),
-  ])
+    gs.info("Incidents with priority {0} had {1} average modifications and {2} average reassignments" , [grInc.priority.getDisplayValue(), grInc.getAggregate('AVG', 'sys_mod_count'), grInc.getAggregate('AVG', 'reassignment_count')])
 }
-gs.info(grInc.getTotal("COUNT"))
 ```
 
-![28](./images/28.png)
+![30](./images30.png)
 
 - You should see the output similar to the following:
 
-![29](./images/29.png)
+![31](./images/31.png)
+
+
+#### isHaving()
 
 &nbsp;&nbsp;&nbsp;&nbsp; This method is extermely useful when you want to trigger something if record count crosses the defined threshold or to find duplicate records. You can find the awesome post on snprotips blog by Tim Woodruff [here](https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html) regarding same.
 

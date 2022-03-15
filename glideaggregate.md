@@ -340,16 +340,21 @@ while (grInc.next()) {
 
 &nbsp;&nbsp;&nbsp;&nbsp; This method is extermely useful when you want to trigger something if record count crosses the defined threshold or to find duplicate records. You can find the awesome post on snprotips blog by Tim Woodruff [here](https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html) regarding same.
 
+
 ---
 
-### Where can you learn more?
+### How can you learn more?
 
-&nbsp;&nbsp;&nbsp;&nbsp;Here is some of the resources which will help provide examples and use cases to furthur enhance your understanding:
-
-- [ServiceNow API documentation](https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server_legacy/c_GlideAggregateAPI)
-- [Understanding GlideAggregate by Andrew Barnes](https://developer.servicenow.com/blog.do?p=/post/glideaggregate/)
-- [ServiceNow product documentation](https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html)
+&nbsp;&nbsp;&nbsp;&nbsp;The best way to learn anything is hands-on exercises. Here is some of the resources which will help provide examples and use cases to furthur enhance your understanding:
 - [Observations When Using GlideAggregate with Steven Bell](https://www.youtube.com/watch?v=KmxsVbnAHxk)
+- [Community Code Snippets: Pondering the GlideAggregate Object (Advanced) by Steven Bell](https://community.servicenow.com/community?id=community_article&sys_id=4184de51db982348a39a0b55ca961960)
+- [Understanding GlideAggregate by Andrew Barnes](https://developer.servicenow.com/blog.do?p=/post/glideaggregate/)
+- [Counting with GlideAggregate by Ben Sweetser](https://developer.servicenow.com/blog.do?p=/post/training-glideagg/)
+- [ServiceNow product documentation](https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html)
+- [ServiceNow API documentation](https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server_legacy/c_GlideAggregateAPI)
+
+
+
 - [GlideAggregate Examples by GarrettNow](https://garrettnow.com/2014/02/28/glideaggregate-examples/) -[COUNTING WITH GLIDEAGGREGATE by BEN SWEETSER](https://developer.servicenow.com/blog.do?p=/post/training-glideagg/)
 
 //Draft
@@ -391,7 +396,7 @@ https://pathwayscg.com/easily-identifying-duplicate-records-in-servicenow/
 
 https://finite-partners.com/byte-2-glideaggregate-examples/
 
-https://community.servicenow.com/community?id=community_article&sys_id=4184de51db982348a39a0b55ca961960
+
 
 https://books.google.co.in/books?id=TJjcDgAAQBAJ&pg=PA99&lpg=PA99&dq=GlideAggregate&source=bl&ots=oFFCZghU6j&sig=ACfU3U0u-D0AjDAf6bmZpXa9udzMXf7_TQ&hl=en&sa=X&ved=2ahUKEwjgyYCVwMX2AhUZrVYBHYrPDXw4MhDoAXoECBEQAw#v=onepage&q=GlideAggregate&f=false
 

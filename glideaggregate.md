@@ -392,9 +392,9 @@ while (grInc.next()) {
 
 ![35](./images/35.png)
 
-#### addTrend()
+#### getQuery()
 
-&nbsp;&nbsp;&nbsp;&nbsp;addTrend() method adds a trend for a field. Let us modify the script to display number of incidents by months.
+&nbsp;&nbsp;&nbsp;&nbsp;getQuery() method retrieves the query necessary to return the current aggregate.
 
 - Copy the below script to scripts - background, and click **Run script** button:
 
@@ -433,6 +433,7 @@ while (grInc.next()) {
 - [ServiceNow API documentation](https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server_legacy/c_GlideAggregateAPI)
 - [ServiceNow product documentation](https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html)
 - [GlideAggregate Examples by GarrettNow](https://garrettnow.com/2014/02/28/glideaggregate-examples/)
+- [Find duplicate user email (or anything else)](https://www.thiscodeworks.com/find-duplicate-user-email-or-anything-else-blogs-blog-servicenow-community-servicenow-javascript-duplicate/601038407a4fe30014436f5b)
 
 //Draft
 

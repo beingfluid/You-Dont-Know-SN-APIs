@@ -312,7 +312,7 @@ gs.info(grInc.getTotal("COUNT"))
 
 #### Count isn't the only function
 
-&nbsp;&nbsp;&nbsp;&nbsp; So far we have seen some examples that utilizes COUNT for understanding GlideAggregate APIs, But Count is not the only thing that we can do with it. I would like to quote Andrew Barnes as is from his exteremely useful ServiceNow blog post "Understanding GlideAggregate" which can be found [here](https://developer.servicenow.com/blog.do?p=/post/glideaggregate/):
+&nbsp;&nbsp;&nbsp;&nbsp; So far we have seen some examples that utilizes COUNT for understanding GlideAggregate APIs, But Count is not the only thing that we can do with it. We can also use SUM, MAX, MIN, and AVG to get the total sum, maximum number, minimum number, and average, respectively. I would like to quote Andrew Barnes as is from his exteremely useful ServiceNow blog post "Understanding GlideAggregate" which can be found [here](https://developer.servicenow.com/blog.do?p=/post/glideaggregate/):
 
 > Count isn’t the only function we can perform with GlideAggregate. Average, Sum, Max, Min are handy when dealing with numbers. Our favorite example table incident has several useful fields that pure counts isn’t wildly useful. Our service desk might want to know the average number of times incidents were modified sys_mod_count or reassigned reassignment_count. The service desk owner can use this information to set a baseline, and then run this every month to see if changes have been an improvement or not.
 
@@ -434,48 +434,8 @@ while (grInc.next()) {
 - [ServiceNow product documentation](https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html)
 - [GlideAggregate Examples by GarrettNow](https://garrettnow.com/2014/02/28/glideaggregate-examples/)
 - [Find duplicate user email (or anything else)](https://www.thiscodeworks.com/find-duplicate-user-email-or-anything-else-blogs-blog-servicenow-community-servicenow-javascript-duplicate/601038407a4fe30014436f5b)
-
-//Draft
-
-https://www.thiscodeworks.com/tag/servicenow
-
-/_
-Client callable script include used for filtering sys_user lists
-to identify duplication email users
-name: duplicateEmail
-active: true
-client callabe: true
-_/
-function duplicateEmail() {
-var xx = new GlideAggregate('sys_user');
-xx.addAggregate('COUNT', 'email');
-xx.addHaving('COUNT', 'email', '>', '1');
-xx.query();
-var answer = new Array();
-while (xx.next()) {
-answer.push(xx.getValue('email'));
-}
-return answer;
-}
-
-http://snowscrip.blogspot.com/2019/03/background-scripts.html
-
-https://codecreative.io/blog/3-strategies-to-fix-nested-gliderecords/
-
-https://www.learnnowlab.com/advance-glide-script/
-
-https://learning.oreilly.com/library/view/mastering-servicenow-scripting/9781788627092/1123612d-e720-4b69-8805-8976af94a59c.xhtml
-
-https://snowunderground.com/blog/tag/glideaggregate
-
-https://pathwayscg.com/easily-identifying-duplicate-records-in-servicenow/
-
-https://finite-partners.com/byte-2-glideaggregate-examples/
-
-https://books.google.co.in/books?id=TJjcDgAAQBAJ&pg=PA99&lpg=PA99&dq=GlideAggregate&source=bl&ots=oFFCZghU6j&sig=ACfU3U0u-D0AjDAf6bmZpXa9udzMXf7_TQ&hl=en&sa=X&ved=2ahUKEwjgyYCVwMX2AhUZrVYBHYrPDXw4MhDoAXoECBEQAw#v=onepage&q=GlideAggregate&f=false
-
-https://sn.jace.pro/getting-started/GlideAggregate/
-
-https://www.acorio.com/servicenow-hacks-to-try-home/
-
-https://shalamaster.com/GLIDEAGGREGATE.html
+- [Advance glide script in ServiceNow](https://www.learnnowlab.com/advance-glide-script/)
+- [Faster API than GlideRecord?](https://snowunderground.com/blog/tag/glideaggregate)
+- [GlideAggregate Examples](https://finite-partners.com/byte-2-glideaggregate-examples/)
+- [Easily identifying duplicate records in ServiceNow](https://pathwayscg.com/easily-identifying-duplicate-records-in-servicenow/)
+- [Background Scripts by snowscrip](http://snowscrip.blogspot.com/2019/03/background-scripts.html)

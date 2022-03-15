@@ -5,11 +5,16 @@
 &nbsp;&nbsp;&nbsp;&nbsp;If you did not get what exactly I was asked to do, follow this steps:
 
 - Navigate to **Incident > All**
-  ![1](./images/1.png)
+
+![1](./images/1.png)
+
 - Right-click the column **Priority** and select **Group By Priority**.
-  ![2](./images/2.png)
+
+![2](./images/2.png)
+
 - Your window will display something like this:
-  ![3](./images/3.png)
+
+![3](./images/3.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;Here, You will notice:
 
@@ -159,6 +164,8 @@ while (grInc.next()) {
 
 ![17](./images/17.png)
 
+### getTotal()
+
 &nbsp;&nbsp;&nbsp;&nbsp;Let us modify our script to introduce another method, getTotal(), which returns the number of records by summing an aggregate:
 
 - Copy the below script to scripts - background, and click **Run script** button:
@@ -176,15 +183,132 @@ while (grInc.next()) {
 gs.info(grInc.getTotal("COUNT"))
 ```
 
-![16](./images/18.png)
+![18](./images/18.png)
 
 - You should see the output similar to the following:
 
-![17](./images/19.png)
+![19](./images/19.png)
 
-### Group records
+### groupBy() and COUNT
 
-&nbsp;&nbsp;&nbsp;&nbsp;Now, we can get back to our initial requirement:
+&nbsp;&nbsp;&nbsp;&nbsp;At this point you should ask if there are two ways to group, what is the difference between them? Let us modify the script a bit to use both groupBy() and COUNT together:
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.groupBy("priority")
+grInc.groupBy("state")
+grInc.addAggregate("COUNT", "priority")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Priority: {0} & State: {1} ({2})", [
+    grInc.getDisplayValue("priority"),
+    grInc.getDisplayValue("state"),
+    grInc.getAggregate("COUNT", "priority"),
+  ])
+}
+gs.info(grInc.getTotal("COUNT"))
+```
+
+![20](./images/20.png)
+
+- You should see the output similar to the following:
+
+![21](./images/21.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Here We did print number of records for each priority grouped by state. Let us verify the results:
+
+- Navigate to **Incident > All**
+
+![1](./images/1.png)
+
+- Right-click the column **Priority** and select **Group By Priority**.
+
+![2](./images/2.png)
+
+- Your window will display something like this:
+
+![3](./images/3.png)
+
+- Now, click the **arrow icon** next to the Priority 'Critical' to expand the group
+
+![22](./images/22.png)
+
+- Right-click the value **In Progress** for column **State** and select **Show Matching**.
+
+![25](./images/25.png)
+
+- You should see the output similar to the following:
+
+![23](./images/23.png)
+
+![24](./images/24.png)
+
+### Sorting the result
+
+#### orderBy()
+
+&nbsp;&nbsp;&nbsp;&nbsp; Let us introduce another method called orderBy(), which provides the name of a field that should be used to order the aggregates.:
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.groupBy("priority")
+grInc.groupBy("state")
+grInc.addAggregate("COUNT", "priority")
+grInc.orderBy("priority")
+grInc.orderBy("state")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Priority: {0} & State: {1} ({2})", [
+    grInc.getDisplayValue("priority"),
+    grInc.getDisplayValue("state"),
+    grInc.getAggregate("COUNT", "priority"),
+  ])
+}
+gs.info(grInc.getTotal("COUNT"))
+```
+
+![26](./images/26.png)
+
+- You should see the output similar to the following:
+
+![27](./images/27.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp; In the above example, we did sort the list by Priority and state.
+
+#### orderByAggregate()
+
+&nbsp;&nbsp;&nbsp;&nbsp; Another variation of orderBy() is orderByAggregate(), which orders the aggregates based on the specified aggregate and field. Let us slightly modify our script:
+
+- Copy the below script to scripts - background, and click **Run script** button:
+
+```js
+var grInc = new GlideAggregate("incident")
+grInc.groupBy("priority")
+grInc.groupBy("state")
+grInc.addAggregate("COUNT", "priority")
+grInc.orderByAggregate("count", "priority")
+grInc.query()
+while (grInc.next()) {
+  gs.info("Priority: {0} & State: {1} ({2})", [
+    grInc.getDisplayValue("priority"),
+    grInc.getDisplayValue("state"),
+    grInc.getAggregate("COUNT", "priority"),
+  ])
+}
+gs.info(grInc.getTotal("COUNT"))
+```
+
+![28](./images/28.png)
+
+- You should see the output similar to the following:
+
+![29](./images/29.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp; You might have already noticed that the result is now sorted by the number of records.
 
 ---
 

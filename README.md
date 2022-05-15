@@ -1,4 +1,4 @@
-# You-Dont-Know-SN-APIs
+# You Dont Know SN APIs
 
 ## Index
 

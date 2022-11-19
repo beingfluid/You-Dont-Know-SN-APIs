@@ -172,11 +172,155 @@ while (parser.next()) {
 
 &nbsp;&nbsp;&nbsp;&nbsp;Since we know that `row` is an javascript object, with column headers as keys and cell data as property values. We can easily retrieve the the sheet data by modifying the code inside while loop as below:
 
+```js
+while (parser.next()) {
+    var row = parser.getRow();
+    //     gs.info("typeof row: " + typeof row);
+    //     gs.info("row: " + row);
+    //     gs.info("row: " + JSON.stringify(row, null, 4));
+    var currentRowCellData = "";
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + "\t";
+    }
+    gs.info("currentRowCellData: " + currentRowCellData);
+}
+```
+
 ![code17](./images2/code17.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;After executing the code again, you should get output with all the cell data from our demo data sheet:
 
 ![code18](./images2/code18.png)
+
+### Break Time
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now that we have basic understanding of some of the APIs, It is good time to take a break and get back to our business requirement. Let us modify our code to check if any of the mandatory `Asset Tag`, `Model` or `Model category` is empty:
+
+```js
+var mandatoryHeaders = ["Asset tag", "Display name", "Model category"];
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info("No value provided for mandatory column: " + currentHeader);
+        }
+
+    }
+}
+```
+
+![code19](./images2/code19.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;If you have noticed already, I did remove all the comments from the code and modified the script within while loop to perform our validation for empty values of mandatory columns. And I have declared an additional array to store the mandatory column headers which has been used later in the loop. Here's how the whole script looks like:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = ["Asset tag", "Display name", "Model category"];
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info("No value provided for mandatory column: " + currentHeader);
+        }
+
+    }
+}
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now Let us modify our code to to add following lines to check if any of the mandatory `Model` or `Model category` is has a reference record existing in the system:
+
+![code20](./images2/code20.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Here's how the whole script looks like:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = ["Asset tag", "Display name", "Model category"];
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info("No value provided for mandatory column: " + currentHeader);
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === "NoReference") {
+            gs.info("Referenced value " + row[currentHeader] + " does not exist for mandatory column: " + currentHeader);
+        }
+
+    }
+}
+
+function checkReference(cellHeader, cellData) {
+    if (cellHeader == "Display name") {
+        var grModel = new GlideRecord("cmdb_model");
+        grModel.addQuery("display_name", cellData);
+        grModel.query();
+        if (!grModel.hasNext()) {
+            return "NoReference";
+        }
+    }
+    if (cellHeader == "Model category") {
+        var grModelCategory = new GlideRecord("cmdb_model_category");
+        grModelCategory.addQuery("name", cellData);
+        grModelCategory.query();
+        if (!grModelCategory.hasNext()) {
+            return "NoReference";
+        }
+
+    }
+    return "ReferencedRecordFound";
+}
+```
+
+
 
 ---
 

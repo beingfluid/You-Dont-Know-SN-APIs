@@ -564,6 +564,23 @@ function checkReference(cellHeader, cellData) {
 
 &nbsp;&nbsp;&nbsp;&nbsp;So we have our script to validate the Excel sheet. But, we did not do anything for loading the excel data to the platform. Let's build a data source and transform map, which we can use later in our script to automate the process.
 
+![import1](./images2/import1.png)
+![import2](./images2/import2.png)
+![import3](./images2/import3.png)
+![import4](./images2/import4.png)
+![import5](./images2/import5.png)
+![import6](./images2/import6.png)
+![import7](./images2/import7.png)
+![import8](./images2/import8.png)
+![import9](./images2/import9.png)
+
+![script2](./images2/script2.png)
+![script1](./images2/script1.png)
+
+### Building Catalog item
+
+&nbsp;&nbsp;&nbsp;&nbsp;So we have our script to validate the Excel sheet. But, we did not do anything for loading the excel data to the platform. Let's build a data source and transform map, which we can use later in our script to automate the process.
+
 
 
 

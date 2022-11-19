@@ -319,6 +319,256 @@ function checkReference(cellHeader, cellData) {
     return "ReferencedRecordFound";
 }
 ```
+&nbsp;&nbsp;&nbsp;&nbsp;Let us introduce a new variable `rowNumber` for better logging as below:
+
+```js
+var rowNumber=1;
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info("Row "+rowNumber+"1 - No value provided for mandatory column: " + currentHeader);
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === "NoReference") {
+            gs.info("Row "+rowNumber+"1 - Referenced value " + row[currentHeader] + " does not exist for mandatory column: " + currentHeader);
+        }
+
+    }
+ rowNumber++;
+}
+```
+
+![code21](./images2/code21.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Let us introduce another variable `insufficientData` to check if manadatory column is empty or reference does not exist:
+
+```js
+var insufficientData="FALSE";
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info("Row "+rowNumber+" - No value provided for mandatory column: " + currentHeader);
+   insufficientData="TRUE";
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === "NoReference") {
+            gs.info("Row "+rowNumber+" - Referenced value " + row[currentHeader] + " does not exist for mandatory column: " + currentHeader);
+   insufficientData="TRUE";
+        }
+
+    }
+ rowNumber++;
+}
+```
+
+![code22](./images2/code22.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Before testing the code, we need to make two more changes for our use case. We will analyze the whole sheet for not sufficient data and will log the information only once. Let us modify the code one more time as below:
+
+![code23](./images2/code23.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now our final code should look like this:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = ["Asset tag", "Display name", "Model category"];
+var rowNumber = 1;
+var insufficientData = "FALSE";
+var incorrectDataLog = "Incorrect Data: \n";
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            incorrectDataLog += "Row " + rowNumber + " - No value provided for mandatory column: " + currentHeader + "\n";
+            insufficientData = "TRUE";
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === "NoReference") {
+            incorrectDataLog += "Row " + rowNumber + " - Referenced value " + row[currentHeader] + " does not exist for mandatory column: " + currentHeader + "\n";
+            insufficientData = "TRUE";
+        }
+
+    }
+    rowNumber++;
+}
+
+if (insufficientData !== "TRUE") {
+    incorrectDataLog = "CorrectData";
+}
+gs.info(incorrectDataLog);
+
+
+function checkReference(cellHeader, cellData) {
+    if (cellHeader == "Display name") {
+        var grModel = new GlideRecord("cmdb_model");
+        grModel.addQuery("display_name", cellData);
+        grModel.query();
+        if (!grModel.hasNext()) {
+            return "NoReference";
+        }
+    }
+    if (cellHeader == "Model category") {
+        var grModelCategory = new GlideRecord("cmdb_model_category");
+        grModelCategory.addQuery("name", cellData);
+        grModelCategory.query();
+        if (!grModelCategory.hasNext()) {
+            return "NoReference";
+        }
+
+    }
+    return "ReferencedRecordFound";
+}
+```
+
+#### Creating and testing Invalid Demo Data
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now that we have our code ready to be tested, we need a demo data sheet with some missing or incorrect information. Let's modify the original sheet by deleting some of the mandatory information:
+
+![test1](./images2/test1.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Next, remove the old attachment and replace it with new attachment having incorrect data:
+
+![test2](./images2/test2.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Executing the code again, should didplay the output like this:
+
+![test3](./images2/test3.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;But if you are really paying an attention, you will notice that it is `Row 8` and not `Row 7` which is actually empty. Same applies for other rows. The reason for this is because the first row of excel is column headers and not actually a data. Let's fix it with just increasing the initial value of `rowNumber` by 1.
+
+![test4](./images2/test4.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Another thing that you should notice is, The API parses all the Rows in the sheet even if they are totally empty (E.g. Row 8). Unfortunately, there is no OOTB workaround for this issue available yet. You can read more about the issue [here](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0693417). Though, we can skip those rows with a little trick. Let us write an additional line of code in our script:
+
+![test5](./images2/test5.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;At the end of this section, your final code should be somewhat similar to this:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = ["Asset tag", "Display name", "Model category"];
+var rowNumber = 2;
+var insufficientData = "FALSE";
+var incorrectDataLog = "Incorrect Data: \n";
+while (parser.next()) {
+    var row = parser.getRow();
+
+    if (JSON.stringify(row, removeNullValues) === "{}") {
+        continue;
+    }
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            incorrectDataLog += "Row " + rowNumber + " - No value provided for mandatory column: " + currentHeader + "\n";
+            insufficientData = "TRUE";
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === "NoReference") {
+            incorrectDataLog += "Row " + rowNumber + " - Referenced value " + row[currentHeader] + " does not exist for mandatory column: " + currentHeader + "\n";
+            insufficientData = "TRUE";
+        }
+
+    }
+    rowNumber++;
+}
+
+function removeNullValues(key, value) {
+    if (value != null) {
+        return value;
+    }
+}
+
+if (insufficientData !== "TRUE") {
+    incorrectDataLog = "CorrectData";
+}
+gs.info(incorrectDataLog);
+
+
+function checkReference(cellHeader, cellData) {
+    if (cellHeader == "Display name") {
+        var grModel = new GlideRecord("cmdb_model");
+        grModel.addQuery("display_name", cellData);
+        grModel.query();
+        if (!grModel.hasNext()) {
+            return "NoReference";
+        }
+    }
+    if (cellHeader == "Model category") {
+        var grModelCategory = new GlideRecord("cmdb_model_category");
+        grModelCategory.addQuery("name", cellData);
+        grModelCategory.query();
+        if (!grModelCategory.hasNext()) {
+            return "NoReference";
+        }
+
+    }
+    return "ReferencedRecordFound";
+}
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;If you dont have any idea about how json works or why we have written the code, I highly recommend you to checkout my post on community - [What You Need To Know About JSON And Objects](https://www.servicenow.com/community/developer-articles/integratenow-chapter-2-what-you-need-to-know-about-json-and/ta-p/2299591).
+
+
+### Building a Data Source and Transform Map
+
+&nbsp;&nbsp;&nbsp;&nbsp;So we have our script to validate the Excel sheet. But, we did not do anything for loading the excel data to the platform. Let's build a data source and transform map, which we can use later in our script to automate the process.
+
+
+
+
+
+
 
 
 

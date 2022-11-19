@@ -577,36 +577,18 @@ function checkReference(cellHeader, cellData) {
 ![script2](./images2/script2.png)
 ![script1](./images2/script1.png)
 
-### Building Catalog item
+### Building Catalog item and Workflow
 
-&nbsp;&nbsp;&nbsp;&nbsp;So we have our script to validate the Excel sheet. But, we did not do anything for loading the excel data to the platform. Let's build a data source and transform map, which we can use later in our script to automate the process.
+&nbsp;&nbsp;&nbsp;&nbsp;Now that we have all pre-requisites (a validation script, a data source and a transform map), we can go ahead and create a Catalog item to realize our business requirement.
 
-
-
-
-
-
-
-
+&nbsp;&nbsp;&nbsp;&nbsp;Time up! So we have successfully fulfilled  our business requirement. For the sake of this article, we have done very basic configurations. But in real life scenerio, you might need to have error handling mechanism, additional approvals, user criterias etc. But we won't go to that. Now, it is time to go back to our GlideExcelParserAPIs.
 
 ---
 
-####
+&nbsp;&nbsp;&nbsp;&nbsp;If you are not a nerdy kind of guy, who read the whole big article above; you might like to watch following two short and amazing videos instead:
 
-&nbsp;&nbsp;&nbsp;&nbsp;
+- [GlideExcelParser by Saikiran Guduri](https://www.youtube.com/watch?v=PSgv9I05k98)
+- [Upload data with an excel file and Record producer in ServiceNow by Göran Lundqvist](<https://www.youtube.com/watch?v=_NvSNzk1_Og>)
 
-```javascript
+---
 
-```
-
-![code9](./images2/code.png)
-
-&nbsp;&nbsp;&nbsp;&nbsp;
-
-![code10](./images2/code1.png)
-
-```javascript
-
-```
-
-![name](./images2/image_path.png)

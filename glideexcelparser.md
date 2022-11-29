@@ -4,12 +4,15 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;While exploring a bit, I found this amazing API called **GlideExcelParser** documented [here](https://developer.servicenow.com/dev.do#!/reference/api/quebec/server/GEPS-setNullToEmpty_B). If you haven't used it yet like me, Let's explore together.
 
+&nbsp;&nbsp;&nbsp;&nbsp;If you are not a nerdy kind of guy, who can read the whole big article below; you might like to watch following two short video [GlideExcelParser by Saikiran Guduri](https://www.youtube.com/watch?v=PSgv9I05k98) instead.
+
 ## What is GlideExcelParser
 
 &nbsp;&nbsp;&nbsp;&nbsp;`GlideExcelParser` parses `.xlsx` formatted Excel files and access file data in a script.
 Although, GlideExcelParser methods can be used in both global and scoped scripts, you need to use the `sn_impex` namespace identifier to create a GlideExcelParser object.
 
 &nbsp;&nbsp;&nbsp;&nbsp;What it means is, to creates an instance of GlideExcelParser, we need to use the following syntax:
+
 ```javascript
 var parser = new sn_impex.GlideExcelParser();
 ```
@@ -117,6 +120,7 @@ var attachment = new GlideSysAttachment();
 var attachmentStream = attachment.getContentStream(attachmentSysID);
 gs.info('Attachment content stream: ' + attachmentStream);
 ```
+
 ![code5](./images2/code5.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;After executing the code again, you should get output similar to this:
@@ -351,6 +355,7 @@ function checkReference(cellHeader, cellData) {
     return "ReferencedRecordFound";
 }
 ```
+
 &nbsp;&nbsp;&nbsp;&nbsp;Let us introduce a new variable `rowNumber` for better logging as below:
 
 ```js
@@ -643,16 +648,184 @@ function checkReference(cellHeader, cellData) {
 
 &nbsp;&nbsp;&nbsp;&nbsp;Now that we have all pre-requisites (a validation script, a data source and a transform map), we can go ahead and create a Catalog item to realize our business requirement.
 
+- Navigate to **Service Catalog > Catalog Definition > Maintain Items** & Click **New**.
+![cat1](./images2/cat1.png)
+
+- Provide some meaningful **Name**, **Short Description** & **Description**. Select other details as below and **Save** the form:
+  - Catalogs: **Technical Catalog**
+  - Category: **Infrastructure**
+  - Fulfillment automation level: **Fully automated**
+  
+  ![cat2](./images2/cat2.png)
+
+- Under **Portal Settings** section, Select **Request method** as **Submit** and mark **Hide 'Add to Wish List'** & **Mandatory Attachment** as checked.
+![cat3](./images2/cat3.png)
+
+- Under **Process Engine**, click the magnifying glass besides **Workflow** field.
+![cat4](./images2/cat4.png)
+
+- Click **New**
+![cat5](./images2/cat5.png)
+
+- Provide some meaningful **Name** and **Description** and click **Submit**.
+![cat6](./images2/cat6.png)
+
+- The new workflow is created with the Begin and End activities connected by a single transition.
+![cat7](./images2/cat7.png)
+
+- Switch to the **Core** tab in the Palette. **Click, hold, and drag** the **Run Script** activity onto the canvas. Hover the activity over a transition. When the transition turns blue, drop the activity.
+![cat8](./images2/cat8.png)
+
+- Add some meaningful **Name** and **Stage**. Then Copy the final fix script created in first step and paste here in the **Script** field.
+![cat9](./images2/cat9.png)
+
+- Change the values of variable **tableName** & **tableSysID** as below:
+  
+```js
+var tableName = current.sys_class_name;
+var tableSysID = current.sys_id;
+```
+
+![cat10](./images2/cat10.png)
+
+- Since we already know the list of mandatory columns to be validated; Let's remove the following line of code as we are not going to need it.
+
+```js
+var headers = parser.getColumnHeaders();
+```
+
+![cat11](./images2/cat11.png)
+
+- Let's comment the log statements and add the following line of code at the end of the script, to store the additional comments in the scratchpad if data is not sufficient or incorrect. Then Click **Submit**.
+  
+```js
+workflow.scratchpad.insufficient_data = insufficientData;
+workflow.scratchpad.incorrect_lata_log = incorrectDataLog;
+```
+
+![cat12](./images2/cat12.png)
+
+- Double click the **If** activity.
+![cat13](./images2/cat13.png)
+
+- Give some meaningful **Name** and **Stage**.
+![cat14](./images2/cat14.png)
+
+- Select the **Advanced** check box and add the following script to the **Script** before clicking **Submit**.
+  
+```js
+answer = ifScript();
+
+function ifScript() {
+    if (workflow.scratchpad.insufficient_data === "TRUE") {
+        return 'yes';
+    }
+    return 'no';
+}
+```
+
+![cat15](./images2/cat15.png)
+
+- Next, Double click on **Set Values** activity and set the values as below, then click **Submit**:
+  - Name: **Closed Incomplete**
+  - Stage: **Completed**
+  - Set these values:
+    - State: **Closed inomplete**
+    - Additional comments: **${workflow.scratchpad.incorrect_lata_log}**
+
+  ![cat16](./images2/cat16.png)
+
+- Similarly, Double click on **Set Values** activity again and set the values as below, then click **Submit**:
+  - Name: **Closed complete**
+  - Stage: **Completed**
+  - Set these values:
+    - State: **Closed complete**
+
+  ![cat17](./images2/cat17.png)
+
+- Finally, Double click the new **Run script** activity. Add the following script to the **Script** field:
+
+```js
+//Create a Data Source and Copy an attachment from RITM to Data Source
+var donorTable = current.sys_class_name;
+var donorID = current.sys_id;
+
+var recipientTable = "sys_data_source";
+
+var recipientTableGR = new GlideRecord(recipientTable);
+recipientTableGR.name = gs.getUserName() + " UserImport at: " + new GlideDateTime();
+recipientTableGR.import_set_table_name = 'u_auto_import_assets_data'; 
+recipientTableGR.file_retrieval_method = "Attachment";
+recipientTableGR.type = "File";
+recipientTableGR.format = "Excel";
+recipientTableGR.header_row = 1;
+recipientTableGR.sheet_number = 1;
+
+var recipientID = recipientTableGR.insert(); //Need this since we want to load and transform directly
+
+GlideSysAttachment.copy(donorTable, donorID, recipientTable, recipientID);
+
+//Load the data from attachment to Staging table
+var dataSourceGR = new GlideRecord("sys_data_source");
+dataSourceGR.get(recipientID);
+var loader = new GlideImportSetLoader();
+var importSetRec = loader.getImportSetGr(dataSourceGR);
+var ranload = loader.loadImportSetTable(importSetRec, dataSourceGR);
+importSetRec.state = "loaded";
+importSetRec.update();
+
+//Transform the data into system database
+var transformMapSysIDs = '1f25c5492f1f1110ccc9821df699b642';
+
+var transformWorker = new GlideImportSetTransformerWorker(importSetRec.sys_id, transformMapSysIDs);
+transformWorker.setBackground(true);
+transformWorker.start();
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;For the sake of this article, I'm not going to explain the above script details. May be it could be a content for another article. But to be short we are loading the data from our sheet to import set table that we created and then transforming it to assets table. To understand better what is happening here, I encourage you to check teh youtube video [Upload data with an excel file and Record producer in ServiceNow by Göran Lundqvist](https://www.youtube.com/watch?v=_NvSNzk1_Og).
+
+
+- Don't forget to replace the **Import set table name** and **Transform Map SysID** noted from second step before clicking **Submit**:
+![cat18](./images2/cat18.png)
+![cat19](./images2/cat19.png)
+
+- Now configure transitions for all activities as shown in the screenshot below:
+![cat20](./images2/cat20.png)
+
+- Let's navigate back to our catalog item window and select the newly created workflow and **Update** the catalog item.
+![cat21](./images2/cat21.png)
+
+- In order to see the Technical Catalog on our Service Portal, we need to do some additional configurations. Navigate to **All > Service Portal > Portals** & Click the **Service Portal** record.
+![cat23](./images2/cat23.png)
+
+- In the Catalogs related list, click **Edit**.
+![cat24](./images2/cat24.png)
+
+- Select **Technical Catalog** to add to the portal and click **Save**
+![cat25](./images2/cat25.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Well we are done with our development and it is a time for unit testing:
+
+- Navigate to Service Portal and click **Request Something**.
+![cat22](./images2/cat22.png)
+
+- Now, we should be able to see our newly created catalog item under **Infrastructure** category of Technical Catalog. Click to **open** it.
+![cat26](./images2/cat26.png)
+
+- Add our incorrect demo data sheet as an attachment and click **Submit**.
+![cat27](./images2/cat27.png)
+
+- Click on the catalog item name on the Ticket summary form to see the additional comments with error logs:
+![cat28](./images2/cat28.png)
+![cat29](./images2/cat29.png)
+
+- Perform another test with correct sheet to make sure that data is loaded correctly to asset table:
+![cat30](./images2/cat30.png)
+![cat31](./images2/cat31.png)
+
+
 ### Time's up!
 
 &nbsp;&nbsp;&nbsp;&nbsp;So we have successfully fulfilled  our business requirement. For the sake of this article, we have done very basic configurations. But in real life scenerio, you might need to have error handling mechanism, additional approvals, user criterias etc. But we won't go to that. Now, it is time to go back to our GlideExcelParserAPIs.
 
 ---
-
-&nbsp;&nbsp;&nbsp;&nbsp;If you are not a nerdy kind of guy, who read the whole big article above; you might like to watch following two short and amazing videos instead:
-
-- [GlideExcelParser by Saikiran Guduri](https://www.youtube.com/watch?v=PSgv9I05k98)
-- [Upload data with an excel file and Record producer in ServiceNow by Göran Lundqvist](<https://www.youtube.com/watch?v=_NvSNzk1_Og>)
-
----
-

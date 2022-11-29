@@ -1126,5 +1126,14 @@ parser.setNullToEmpty(true);
 
 ![after19](./images2/after19.png)
 
+#### close()
+
+&nbsp;&nbsp;&nbsp;&nbsp;As name suggests, **close()** close the connection to the input stream and release the document.
+
+&nbsp;&nbsp;&nbsp;&nbsp;All we need to do is just adding the following line at the end of the code:
+
+```js
+parser.close();
+```
 
 ---

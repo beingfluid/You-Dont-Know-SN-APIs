@@ -3,3 +3,4 @@
 ## Index
 
 - [GlideAggregate](./glideaggregate.md)
+- [GlideExcelParser](./glideexcelparser.md)

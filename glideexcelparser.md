@@ -932,7 +932,7 @@ while (parser.next()) {
 
 &nbsp;&nbsp;&nbsp;&nbsp;If you are paying an attention so far, we have an additional method **setSource**  that we did not yet discussed and slightly different version of **parse** (without parameter); but they play very important role in this case. We will talk about them next, but first let test our next API i.e. **setSheetNumber**.
 
-&nbsp;&nbsp;&nbsp;&nbsp;Let's modify our code to use **setSheetNumber** instead of **setSheetName**:
+&nbsp;&nbsp;&nbsp;&nbsp;Let's modify our code to use **setSheetNumber** instead of **setSheetName**. Please note that 0 denotes sheet 1, 1 denotes sheet 2 & so on...:
 
 ```js
 parser.setSheetNumber(1);
@@ -986,9 +986,126 @@ while (parser.next()) {
 ![after11](./images2/after11.png)
 ![after12](./images2/after12.png)
 
-#### setSheetName() & setSheetNumber()
+#### setSource()
 
-&nbsp;&nbsp;&nbsp;&nbsp;**setSheetName()**
+&nbsp;&nbsp;&nbsp;&nbsp;**setSource()** defines an input source for parsing multiple times or parsing each worksheet in an Excel file.
+
+&nbsp;&nbsp;&nbsp;&nbsp;E.g. In our demo sheet, we have two sheets "Page 1" & "Page 2". We can use **setSource** to parse an Excel file attachment multiple times to retrieve column headers and print values of each row for each worksheet.
+
+&nbsp;&nbsp;&nbsp;&nbsp;Let's copy a part of code and paste it again at the end of the script and just change the sheet number. We will get some warnings as we are not following the coding best practices, but let's ignore them for a moment:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSource(attachmentStream);
+parser.setSheetNumber(1);
+parser.parse();
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = "";
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + "\t";
+    }
+    gs.info("currentRowCellData: " + currentRowCellData);
+}
+
+parser.setSheetNumber(0);
+parser.parse();
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = "";
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + "\t";
+    }
+    gs.info("currentRowCellData: " + currentRowCellData);
+}
+```
+
+![after13](./images2/after13.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Observe that we did parse each of the sheet using same parser and were able to retrieve the data:
+
+![after14](./images2/after14.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Lets modify our code to be better and parse all sheet's data automatically:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSource(attachmentStream);
+
+// Get the worksheet names to be parsed in the Excel document
+var list_sheet_name = parser.getSheetNames();
+gs.info(" Sheet Names " + list_sheet_name.join(", "));
+
+// Iterate over each worksheet in the Excel workbook
+for (var i = 0; i < list_sheet_name.length; i++) {
+
+    gs.info("Sheet name:    " + list_sheet_name[i]);
+
+    // Set the worksheet name to be parsed
+    parser.setSheetName(list_sheet_name[i]);
+
+    parser.parse();
+
+    var headers = parser.getColumnHeaders();
+    while (parser.next()) {
+        var row = parser.getRow();
+        var currentRowCellData = "";
+        for (var header in headers) {
+            var currentHeader = headers[header];
+            currentRowCellData += row[currentHeader] + "\t";
+        }
+        gs.info("currentRowCellData: " + currentRowCellData);
+    }
+
+}
+```
+
+![after15](./images2/after15.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Observe that we did parse each of the sheet using same parser and were able to retrieve the data:
+
+![after16](./images2/after16.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;The best example for this API can be found at [Developer portal](https://developer.servicenow.com/dev.do#!/reference/api/tokyo/server/sn_impex-namespace/GlideExcelParserScopedAPI#GEPS-setSource_O?navFilter=GlideExcelParser), I encourage you to have a look at that.
+
+
+
 
 
 

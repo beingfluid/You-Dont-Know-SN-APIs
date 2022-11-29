@@ -1,7 +1,8 @@
 # GlideExcelParser
 
 &nbsp;&nbsp;&nbsp;&nbsp;Recently, we did recieve a requirement to build a catalog item for Asset managers, to auto-import asset information in the platform based on attached excel sheet. Additionally, we had to reject the request if the data is missing or does not have referenced records available yet in the system.
-&nbsp;&nbsp;&nbsp;&nbsp;While exploring a bit, I found this amazing API called **GlideExcelParser** documented [here](https://developer.servicenow.com/dev.do#!/reference/api/quebec/server/GEPS-setNullToEmpty_B). If you haven't used it yet like me, Let's learn together.
+
+&nbsp;&nbsp;&nbsp;&nbsp;While exploring a bit, I found this amazing API called **GlideExcelParser** documented [here](https://developer.servicenow.com/dev.do#!/reference/api/quebec/server/GEPS-setNullToEmpty_B). If you haven't used it yet like me, Let's explore together.
 
 ## What is GlideExcelParser
 
@@ -17,28 +18,59 @@ var parser = new sn_impex.GlideExcelParser();
 
 &nbsp;&nbsp;&nbsp;&nbsp;Though, ServiceNow documentation is very clear and pretty self-explanatory (along with the awesome, easy to understand examples), what lacks for this API documentation is a demo data sheet to visualize it better. So before proceeding furthur, Let's create a demo data sheet for ourselves:
 
+- Navigate to **All > Asset > Portfolios > All Assets**.
 ![1](./images2/2022-11-19%2010_23_47-Assets%20_%20ServiceNow.png)
+
+- Open the condition builder by clicking the **show/hid filter icon**; Build a condition as shown below and Click **Run** to apply the filter.
 ![2](./images2/2022-11-19%2010_27_55-Assets%20_%20ServiceNow.png)
+
+- Click the **personalize list icon** in the upper left corner.
 ![3](./images2/2022-11-19%2010_29_43-Assets%20_%20ServiceNow.png)
+
+- Remove the columns **Assigned to** and **Configuration item**.
 ![4](./images2/2022-11-19%2010_32_38-Assets%20_%20ServiceNow.png)
+
+- To export a list report as an Excel spreadsheet, right-click any column heading and select **Export > Excel**.
 ![5](./images2/2022-11-19%2010_36_34-Assets%20_%20ServiceNow.png)
 ![6](./images2/2022-11-19%2010_36_05-Assets%20_%20ServiceNow.png)
+
+- Click **Download**.
 ![7](./images2/2022-11-19%2010_39_00-Assets%20_%20ServiceNow.png)
+
+- Open the downloaded excel sheet.
 ![8](./images2/2022-11-19%2010_40_22-Assets%20_%20ServiceNow.png)
+
+- Notice the column headings.
 ![9](./images2/2022-11-19%2010_45_04-glideexcelparser.md%20-%20You-Dont-Know-SN-APIs%20-%20Visual%20Studio%20Code.png)
+
+- Let us apply some formatting to the excel sheet. However, it is not manadatory.
 ![10](./images2/2022-11-19%2010_50_31-glideexcelparser.md%20-%20You-Dont-Know-SN-APIs%20-%20Visual%20Studio%20Code.png)
 
+&nbsp;&nbsp;&nbsp;&nbsp;I have marked **Asset tag** as Yellow to indicate it is a mandatory field. similarly, **Model category**, **Display name** (indicating Model) & **Company** are marked in Red to indicate they are both mandatory and reference fields. **State**, **Substate** & **Cost** are not mandatory and hence marked in Green.
 
 ### Creating a fix script
 
-&nbsp;&nbsp;&nbsp;&nbsp;It is not necessary to create a fix script for our use case. But, it is always a good idea to test if our code is working as expected. And Fix script always seems to be a better choice than Background script. Also, In order to test our APIs with the demo sheet that we did create, It needs to be in the platform as an attachment. Fix script can also solve that purpose in this case. So let's go ahead and create a fix script and attach our demo sheet to it:
+&nbsp;&nbsp;&nbsp;&nbsp;It is not necessary to create a fix script for our use case. But, it is always a good idea to test if our code is working as expected. And Fix script always seems to be a better choice than Background script cause of it's capabilities. Also, In order to test our APIs with the demo sheet that we did create, It needs to be in the platform as an attachment. Fix script can also solve that purpose in this case. So let's go ahead and create a fix script and attach our demo sheet to it:
 
+- Navigate to **All > System Definition > Fix Scripts** & Click **New**.
 ![11](./images2/fix_script_1.png)
+
+- Provide some meaningful **Name** & **Description** and Click **Submit**.
 ![12](./images2/fix_script_2.png)
+
+- You will be redirected back to list view. **Open** the recently created fix script.
 ![13](./images2/fix_script_3.png)
+
+- Click the **attachments icon**.
 ![14](./images2/fix_script_4.png)
+
+- Click **Choose Files** or **Browse**, depending on your browser, and navigate to a file. Then, Click **Attach**.
 ![15](./images2/fix_script_5.png)
+
+- Notice that our demo data sheet appears in the Current file attachments list; Close the dialog box.
 ![16](./images2/fix_script_6.png)
+
+- Our demo data sheet also appears at the top of the form.
 ![17](./images2/fix_script_7.png)
 
 ### Testing GlideExcelParser APIs
@@ -564,24 +596,56 @@ function checkReference(cellHeader, cellData) {
 
 &nbsp;&nbsp;&nbsp;&nbsp;So we have our script to validate the Excel sheet. But, we did not do anything for loading the excel data to the platform. Let's build a data source and transform map, which we can use later in our script to automate the process.
 
+- Navigate to **All > System Import Sets > Administration > Data Sources** and Click **New**.
 ![import1](./images2/import1.png)
-![import2](./images2/import2.png)
+
+- Provide some meaningful **Name** & **Import set table label**. Select other details as below before clicking **Submit**:
+  - Type: **File**
+  - Format: **Excel**
+  - Sheet number: **1**
+  - Header row: **1**
+  - File retrieval method: **Attachment**
+  
+  ![import2](./images2/import2.png)
+
+- You will be navigated back to list view. Open the recently created Data source record.
 ![import3](./images2/import3.png)
+
+- Add our demo sheet as an attachment to the current record.
 ![import4](./images2/import4.png)
+
+- Click **Test Load 20 Records** related link at the bottom of the form.
 ![import5](./images2/import5.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;The **Test Load 20 Records** UI action is generally used to validate the records that you want to import without the initial intention of running a transformation map to the target table. This action sets the internal state of the import to Load, therefore the transformation map is skipped. There are two good articles regarding this on [NowSupport](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0563963) & [Community](https://www.servicenow.com/community/developer-blog/transforming-your-data-quot-load-all-records-quot-vs-quot-test/ba-p/2282437) that you must read.
+
+- Once data is loaded, click the **Create transform map** link.
 ![import6](./images2/import6.png)
+
+- Provide some meaningful **Name** and Select the **Target table** as **Asset**, then right click on the form header and select **Save**.
 ![import7](./images2/import7.png)
+
+- Click the **Auto Map Matching Fields** Related Link for ServiceNow to attempt to match the staging table columns to the target table columns based on column name.
 ![import8](./images2/import8.png)
+
+- Set the Coalesce value to true to use an **Asset tag** field to check for collisions.
 ![import9](./images2/import9.png)
 
+&nbsp;&nbsp;&nbsp;&nbsp;If a match is found using the coalesce fields, the target record is updated with the information imported from the staging table. If no match is found, a new record is inserted in the database. If no fields are coalesce fields, records are always inserted on import. You can read more about [coalescing](coalescing) on developer portal.
+
+- Note down the **Import set table name** from data source and **SysID** of recently created transform map for later reference (we need it!).
 ![script2](./images2/script2.png)
 ![script1](./images2/script1.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;If you did not use data source or transform map earlier [Importing Data](https://developer.servicenow.com/dev.do#!/learn/learning-plans/tokyo/new_to_servicenow/app_store_learnv2_importingdata_tokyo_importing_data_objectives) is a good place to start.
 
 ### Building Catalog item and Workflow
 
 &nbsp;&nbsp;&nbsp;&nbsp;Now that we have all pre-requisites (a validation script, a data source and a transform map), we can go ahead and create a Catalog item to realize our business requirement.
 
-&nbsp;&nbsp;&nbsp;&nbsp;Time up! So we have successfully fulfilled  our business requirement. For the sake of this article, we have done very basic configurations. But in real life scenerio, you might need to have error handling mechanism, additional approvals, user criterias etc. But we won't go to that. Now, it is time to go back to our GlideExcelParserAPIs.
+### Time's up!
+
+&nbsp;&nbsp;&nbsp;&nbsp;So we have successfully fulfilled  our business requirement. For the sake of this article, we have done very basic configurations. But in real life scenerio, you might need to have error handling mechanism, additional approvals, user criterias etc. But we won't go to that. Now, it is time to go back to our GlideExcelParserAPIs.
 
 ---
 

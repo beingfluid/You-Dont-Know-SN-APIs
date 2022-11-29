@@ -4,7 +4,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;While exploring a bit, I found this amazing API called **GlideExcelParser** documented [here](https://developer.servicenow.com/dev.do#!/reference/api/quebec/server/GEPS-setNullToEmpty_B). If you haven't used it yet like me, Let's explore together.
 
-&nbsp;&nbsp;&nbsp;&nbsp;If you are not a nerdy kind of guy, who can read the whole big article below; you might like to watch following two short video [GlideExcelParser by Saikiran Guduri](https://www.youtube.com/watch?v=PSgv9I05k98) instead.
+&nbsp;&nbsp;&nbsp;&nbsp;If you are not a nerdy kind of guy, who can read the whole big article below; you might want to check short youtube video [GlideExcelParser by Saikiran Guduri](https://www.youtube.com/watch?v=PSgv9I05k98) instead.
 
 ## What is GlideExcelParser
 
@@ -827,5 +827,169 @@ transformWorker.start();
 ### Time's up!
 
 &nbsp;&nbsp;&nbsp;&nbsp;So we have successfully fulfilled  our business requirement. For the sake of this article, we have done very basic configurations. But in real life scenerio, you might need to have error handling mechanism, additional approvals, user criterias etc. But we won't go to that. Now, it is time to go back to our GlideExcelParserAPIs.
+
+&nbsp;&nbsp;&nbsp;&nbsp;Let us modify our incorrect demo data sheet before proceeding furthur. Add another sheet with some demo data. E.g.:
+
+![after1](./images2/after1.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now navigate back to our fix script created in step one and replace the attachment with new updated sheet:
+
+![after2](./images2/after2.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Lets remove the entire code from line number 19, as we do not need it for furthur testing:
+
+![after3](./images2/after3.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Our new script now should look like this:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+```
+
+![after4](./images2/after4.png)
+
+
+#### setSheetName() & setSheetNumber()
+
+&nbsp;&nbsp;&nbsp;&nbsp;**setSheetName()** sets the name of the sheet to be retrieved. Whereas, **setSheetNumber()** sets the number of the Excel sheet to be retrieved. However, It worths remembering that if both setSheetNumber() and setSheetName() are set, setSheetName() is used.
+
+&nbsp;&nbsp;&nbsp;&nbsp;Add the following lines of code at the end of our sheet to retrive all sheet names:
+
+```js
+// Get the worksheet names to be parsed in the Excel document
+var list_sheet_name = parser.getSheetNames();
+
+gs.info(" Sheet Names " + list_sheet_name.join(", "));
+```
+
+![after5](./images2/after5.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;After executing the code, we should be able to see both of our the sheet names in the output:
+
+![after6](./images2/after6.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now to test **setSheetName** first, Let's modify our code as below:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSource(attachmentStream);
+parser.setSheetName("Page 2");
+parser.parse();
+
+// Get the worksheet names to be parsed in the Excel document
+// var list_sheet_name = parser.getSheetNames();
+
+// gs.info(" Sheet Names " + list_sheet_name.join(", "));
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = "";
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + "\t";
+    }
+    gs.info("currentRowCellData: " + currentRowCellData);
+}
+```
+
+![after7](./images2/after7.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;After executing the code, we should be able to see the data from sheet "Page 2" :
+
+![after8](./images2/after8.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;If you are paying an attention so far, we have an additional method **setSource**  that we did not yet discussed and slightly different version of **parse** (without parameter); but they play very important role in this case. We will talk about them next, but first let test our next API i.e. **setSheetNumber**.
+
+&nbsp;&nbsp;&nbsp;&nbsp;Let's modify our code to use **setSheetNumber** instead of **setSheetName**:
+
+```js
+parser.setSheetNumber(1);
+```
+
+![after9](./images2/after9.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;After executing the code, we should be able to see the same output as above:
+
+![after10](./images2/after10.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;It worth mentioning that, it is not necessary to use **setSource** and we can as well do it the old way as shown below:
+
+```js
+var attachmentSysID = "";
+
+var tableName = "sys_script_fix";
+var tableSysID = "19932bfc2f971110ccc9821df699b692";
+
+var grAttachment = new GlideRecord("sys_attachment");
+grAttachment.addEncodedQuery("table_name=" + tableName + "^table_sys_id=" + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSheetNumber(1); 
+parser.parse(attachmentStream);
+
+// Get the worksheet names to be parsed in the Excel document
+// var list_sheet_name = parser.getSheetNames();
+
+// gs.info(" Sheet Names " + list_sheet_name.join(", "));
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = "";
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + "\t";
+    }
+    gs.info("currentRowCellData: " + currentRowCellData);
+}
+```
+
+![after11](./images2/after11.png)
+![after12](./images2/after12.png)
+
+#### setSheetName() & setSheetNumber()
+
+&nbsp;&nbsp;&nbsp;&nbsp;**setSheetName()**
+
+
 
 ---

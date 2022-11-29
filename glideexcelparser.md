@@ -1104,9 +1104,27 @@ for (var i = 0; i < list_sheet_name.length; i++) {
 
 &nbsp;&nbsp;&nbsp;&nbsp;The best example for this API can be found at [Developer portal](https://developer.servicenow.com/dev.do#!/reference/api/tokyo/server/sn_impex-namespace/GlideExcelParserScopedAPI#GEPS-setSource_O?navFilter=GlideExcelParser), I encourage you to have a look at that.
 
+&nbsp;&nbsp;&nbsp;&nbsp;The one of the important point to note here (and you might have already understood): we don't pass parameter to **parse** when used along with **setSource**.
 
+#### setNullToEmpty()
 
+&nbsp;&nbsp;&nbsp;&nbsp;**setNullToEmpty()** accepts one parameter which when true, return an empty value instead of null when an Excel cell is not present.
 
+&nbsp;&nbsp;&nbsp;&nbsp;In our excel sheet there are certain cells that are empty and our script currently prints them as null:
+
+![after17](./images2/after17.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Lets add the following line of code to our script:
+
+```js
+parser.setNullToEmpty(true);
+```
+
+![after18](./images2/parser18.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;Now, executing the script again should display empty value instead of null:
+
+![after19](./images2/after19.png)
 
 
 ---

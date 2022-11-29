@@ -53,7 +53,9 @@ var parser = new sn_impex.GlideExcelParser();
 
 ### Creating a fix script
 
-&nbsp;&nbsp;&nbsp;&nbsp;It is not necessary to create a fix script for our use case. But, it is always a good idea to test if our code is working as expected. And Fix script always seems to be a better choice than Background script cause of it's capabilities. Also, In order to test our APIs with the demo sheet that we did create, It needs to be in the platform as an attachment. Fix script can also solve that purpose in this case. So let's go ahead and create a fix script and attach our demo sheet to it:
+&nbsp;&nbsp;&nbsp;&nbsp;It is not necessary to create a fix script for our use case. But, it is always a good idea to test if our code is working as expected. And Fix script always seems to be a better choice than Background script cause of it's capabilities. Also, In order to test our APIs with the demo sheet that we did create, It needs to be in the platform as an attachment. Fix script can also solve that purpose in this case. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;If you haven't work with fix script earlier, please go and check out [Community Live Stream - Topical Deep Dive - Fix scripts](https://www.youtube.com/watch?v=wI_MovVDRLg) by Chuck Tomasi. If you did, let's go ahead and create a fix script and attach our demo sheet to it:
 
 - Navigate to **All > System Definition > Fix Scripts** & Click **New**.
 ![11](./images2/fix_script_1.png)

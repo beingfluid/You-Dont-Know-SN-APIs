@@ -1,6 +1,0 @@
-[book]
-authors = ["beingfluid"]
-language = "en"
-multilingual = false
-src = "src"
-title = "You don't know ServiceNow API"

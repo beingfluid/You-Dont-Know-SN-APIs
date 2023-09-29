@@ -1,0 +1,629 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>GlideAggregate - You don&#x27;t know ServiceNow APIs</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="cover.html">You don't know ServiceNow APIs</a></li><li class="chapter-item expanded affix "><li class="part-title">Index</li><li class="chapter-item expanded "><a href="glideaggregate.html" class="active"><strong aria-hidden="true">1.</strong> GlideAggregate</a></li><li class="chapter-item expanded "><a href="glideexcelparser.html"><strong aria-hidden="true">2.</strong> GlideExcelParser</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">You don&#x27;t know ServiceNow APIs</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="glideaggregate"><a class="header" href="#glideaggregate">GlideAggregate</a></h1>
+<p>    Recently, I gave an interview, where I was asked to write a script in scripts - background to print priority-wise count of all incident records. And I could not do it. Primarily because I did never use this API for anything else but getting the COUNT. So this is the time for doing what I did not do and probably you do not as well. So let us dig what this API is.</p>
+<p>    If you did not get what exactly I was asked to do, follow this steps:</p>
+<ul>
+<li>Navigate to <strong>Incident &gt; All</strong></li>
+</ul>
+<p><img src="./images/1.png" alt="1" /></p>
+<ul>
+<li>Right-click the column <strong>Priority</strong> and select <strong>Group By Priority</strong>.</li>
+</ul>
+<p><img src="./images/2.png" alt="2" /></p>
+<ul>
+<li>Your window will display something like this:</li>
+</ul>
+<p><img src="./images/3.png" alt="3" /></p>
+<p>    Here, You will notice:</p>
+<ul>
+<li>Groups are named for the values of the field selected for grouping. For example, in our case, since we grouped by Priority, each group is a Priority's display name.</li>
+<li>The record count for each group appears next to the group name/Priority.</li>
+<li>The total number of items in the list (all groups/Priorities combined) appears near the paging controls in the list.</li>
+</ul>
+<p>    I had to write a script to print the output as shown in the last screenshot above. If you want to read more about &quot;Grouped lists&quot; you can find it <a href="https://docs.servicenow.com/bundle/sandiego-platform-user-interface/page/use/using-lists/concept/c_GroupedLists.html">here</a>.</p>
+<h2 id="what-is-glideaggregate"><a class="header" href="#what-is-glideaggregate">What is GlideAggregate</a></h2>
+<p>    GlideAggregate is an extension of GlideRecord. It provides the capability to do aggregation (COUNT, SUM, MIN, MAX, AVG). These operations can be done with regular GlideRecord use, but with GlideAggregate, they are optimized around these use cases and offer significant efficiencies.</p>
+<h3 id="getting-the-number-of-records-for-gliderecord-query"><a class="header" href="#getting-the-number-of-records-for-gliderecord-query">Getting the number of records for GlideRecord query</a></h3>
+<p>    One of the frequently used use case is finding number of records for a a GlideRecord query. This can be achieved using getRowCount for a GlideRecord query, which is not a efficient solution if no operation is performed with the returned records. Alternatively, use of GlideAggreggate can improve the performance significantly. Let us see how to script both the ways:</p>
+<h4 id="getrowcount"><a class="header" href="#getrowcount">getRowCount</a></h4>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideRecord(&quot;incident&quot;)
+grInc.query()
+gs.info(grInc.getRowCount())
+</code></pre>
+<p><img src="./images/4.png" alt="4" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/5.png" alt="5" /></p>
+<ul>
+<li>Now, Navigate to <strong>Incident &gt; All</strong></li>
+</ul>
+<p><img src="./images/1.png" alt="1" /></p>
+<ul>
+<li>Right-click the value <strong>New</strong> for column <strong>State</strong> and select <strong>Show Matching</strong>.</li>
+</ul>
+<p><img src="./images/7.png" alt="7" /></p>
+<ul>
+<li>Your window will display something like below, Observe that the condition State = New has been added to the filter and the total number of records with this filter:</li>
+</ul>
+<p><img src="./images/8.png" alt="8" /></p>
+<ul>
+<li>Right-click the end of the filter breadcrumb and select <strong>Copy query</strong> from the context menu:</li>
+</ul>
+<p><img src="./images/9.png" alt="9" /></p>
+<ul>
+<li>Now, let us modify the script as below to use encoded query copied above to filter the records:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideRecord(&quot;incident&quot;)
+grInc.addEncodedQuery(&quot;state=1&quot;)
+grInc.query()
+gs.info(grInc.getRowCount())
+</code></pre>
+<ul>
+<li>Copy the above script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<p><img src="./images/10.png" alt="10" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/11.png" alt="11" /></p>
+<p>    This is the traditional way of getting number of records for a specific filter. You can dig documentation to know more about <a href="https://docs.servicenow.com/bundle/rome-platform-user-interface/page/use/using-lists/task/t_GenEncodQueryStringFilter.html">Copy query</a> &amp; <a href="https://docs.servicenow.com/bundle/sandiego-platform-user-interface/page/use/using-lists/concept/c_QuickFilters.html">Quick filters</a>.</p>
+<h4 id="glideaggregate-1"><a class="header" href="#glideaggregate-1">GlideAggregate</a></h4>
+<p>    There is alternate way of scripting the same using GlideAggregate that can improve the performance significantly and is more efficient:</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.addEncodedQuery(&quot;state=1&quot;)
+grInc.addAggregate(&quot;COUNT&quot;)
+grInc.query()
+if (grInc.next()) {
+  gs.info(grInc.getAggregate(&quot;COUNT&quot;))
+}
+</code></pre>
+<p><img src="./images/12.png" alt="12" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/13.png" alt="13" /></p>
+<p>    In the above script,</p>
+<ul>
+<li>addAggregate() method is used to ask needed information.</li>
+<li>getAggregate() method gets the value of an aggregate from the current record.</li>
+</ul>
+<h3 id="group-records"><a class="header" href="#group-records">Group records</a></h3>
+<p>    Now, we can get back to our initial requirement:</p>
+<ul>
+<li>
+<p>Navigate to <strong>Incident &gt; All</strong>
+<img src="./images/1.png" alt="1" /></p>
+</li>
+<li>
+<p>Right-click the column <strong>Priority</strong> and select <strong>Group By Priority</strong>.
+<img src="./images/2.png" alt="2" /></p>
+</li>
+<li>
+<p>Your window will display something like this:
+<img src="./images/3.png" alt="3" /></p>
+</li>
+<li>
+<p>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</p>
+</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.groupBy(&quot;priority&quot;)
+grInc.addAggregate(&quot;COUNT&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;Priority: {0} ({1})&quot;, [
+    grInc.getDisplayValue(&quot;priority&quot;),
+    grInc.getAggregate(&quot;COUNT&quot;),
+  ])
+}
+</code></pre>
+<p><img src="./images/14.png" alt="14" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/15.png" alt="15" /></p>
+<p>    In the above script, groupBy() provides the name of a field to use in grouping the aggregates. Alternatively, we can use the second parameter of addAggregate() method to achieve the same result:</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.addAggregate(&quot;COUNT&quot;, &quot;priority&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;Priority: {0} ({1})&quot;, [
+    grInc.getDisplayValue(&quot;priority&quot;),
+    grInc.getAggregate(&quot;COUNT&quot;, &quot;priority&quot;),
+  ])
+}
+</code></pre>
+<p><img src="./images/16.png" alt="16" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/17.png" alt="17" /></p>
+<h3 id="gettotal"><a class="header" href="#gettotal">getTotal()</a></h3>
+<p>    Let us modify our script to introduce another method, getTotal(), which returns the number of records by summing an aggregate:</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.addAggregate(&quot;COUNT&quot;, &quot;priority&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;Priority: {0} ({1})&quot;, [
+    grInc.getDisplayValue(&quot;priority&quot;),
+    grInc.getAggregate(&quot;COUNT&quot;, &quot;priority&quot;),
+  ])
+}
+gs.info(grInc.getTotal(&quot;COUNT&quot;))
+</code></pre>
+<p><img src="./images/18.png" alt="18" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/19.png" alt="19" /></p>
+<h3 id="groupby-and-count"><a class="header" href="#groupby-and-count">groupBy() and COUNT</a></h3>
+<p>    At this point you should ask if there are two ways to group, what is the difference between them? Let us modify the script a bit to use both groupBy() and COUNT together:</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.groupBy(&quot;priority&quot;)
+grInc.groupBy(&quot;state&quot;)
+grInc.addAggregate(&quot;COUNT&quot;, &quot;priority&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;Priority: {0} &amp; State: {1} ({2})&quot;, [
+    grInc.getDisplayValue(&quot;priority&quot;),
+    grInc.getDisplayValue(&quot;state&quot;),
+    grInc.getAggregate(&quot;COUNT&quot;, &quot;priority&quot;),
+  ])
+}
+gs.info(grInc.getTotal(&quot;COUNT&quot;))
+</code></pre>
+<p><img src="./images/20.png" alt="20" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/21.png" alt="21" /></p>
+<p>    Here We did print number of records for each priority grouped by state. Let us verify the results:</p>
+<ul>
+<li>Navigate to <strong>Incident &gt; All</strong></li>
+</ul>
+<p><img src="./images/1.png" alt="1" /></p>
+<ul>
+<li>Right-click the column <strong>Priority</strong> and select <strong>Group By Priority</strong>.</li>
+</ul>
+<p><img src="./images/2.png" alt="2" /></p>
+<ul>
+<li>Your window will display something like this:</li>
+</ul>
+<p><img src="./images/3.png" alt="3" /></p>
+<ul>
+<li>Now, click the <strong>arrow icon</strong> next to the Priority 'Critical' to expand the group</li>
+</ul>
+<p><img src="./images/22.png" alt="22" /></p>
+<ul>
+<li>Right-click the value <strong>In Progress</strong> for column <strong>State</strong> and select <strong>Show Matching</strong>.</li>
+</ul>
+<p><img src="./images/25.png" alt="25" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/23.png" alt="23" /></p>
+<p><img src="./images/24.png" alt="24" /></p>
+<h3 id="sorting-the-result"><a class="header" href="#sorting-the-result">Sorting the result</a></h3>
+<h4 id="orderby"><a class="header" href="#orderby">orderBy()</a></h4>
+<p>     Let us introduce another method called orderBy(), which provides the name of a field that should be used to order the aggregates.:</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.groupBy(&quot;priority&quot;)
+grInc.groupBy(&quot;state&quot;)
+grInc.addAggregate(&quot;COUNT&quot;, &quot;priority&quot;)
+grInc.orderBy(&quot;priority&quot;)
+grInc.orderBy(&quot;state&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;Priority: {0} &amp; State: {1} ({2})&quot;, [
+    grInc.getDisplayValue(&quot;priority&quot;),
+    grInc.getDisplayValue(&quot;state&quot;),
+    grInc.getAggregate(&quot;COUNT&quot;, &quot;priority&quot;),
+  ])
+}
+gs.info(grInc.getTotal(&quot;COUNT&quot;))
+</code></pre>
+<p><img src="./images/26.png" alt="26" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/27.png" alt="27" /></p>
+<p>     In the above example, we did sort the list by Priority and state.</p>
+<h4 id="orderbyaggregate"><a class="header" href="#orderbyaggregate">orderByAggregate()</a></h4>
+<p>     Another variation of orderBy() is orderByAggregate(), which orders the aggregates based on the specified aggregate and field. Let us slightly modify our script:</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.groupBy(&quot;priority&quot;)
+grInc.groupBy(&quot;state&quot;)
+grInc.addAggregate(&quot;COUNT&quot;, &quot;priority&quot;)
+grInc.orderByAggregate(&quot;count&quot;, &quot;priority&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;Priority: {0} &amp; State: {1} ({2})&quot;, [
+    grInc.getDisplayValue(&quot;priority&quot;),
+    grInc.getDisplayValue(&quot;state&quot;),
+    grInc.getAggregate(&quot;COUNT&quot;, &quot;priority&quot;),
+  ])
+}
+gs.info(grInc.getTotal(&quot;COUNT&quot;))
+</code></pre>
+<p><img src="./images/28.png" alt="28" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/29.png" alt="29" /></p>
+<p>     You might have already noticed that the result is now sorted by the number of records.</p>
+<h4 id="count-isnt-the-only-function"><a class="header" href="#count-isnt-the-only-function">Count isn't the only function</a></h4>
+<p>     So far we have seen some examples that utilizes COUNT for understanding GlideAggregate APIs, But Count is not the only thing that we can do with it. We can also use SUM, MAX, MIN, and AVG to get the total sum, maximum number, minimum number, and average, respectively. I would like to quote Andrew Barnes as is from his exteremely useful ServiceNow blog post &quot;Understanding GlideAggregate&quot; which can be found <a href="https://developer.servicenow.com/blog.do?p=/post/glideaggregate/">here</a>:</p>
+<blockquote>
+<p>Count isn’t the only function we can perform with GlideAggregate. Average, Sum, Max, Min are handy when dealing with numbers. Our favorite example table incident has several useful fields that pure counts isn’t wildly useful. Our service desk might want to know the average number of times incidents were modified sys_mod_count or reassigned reassignment_count. The service desk owner can use this information to set a baseline, and then run this every month to see if changes have been an improvement or not.</p>
+</blockquote>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.groupBy(&quot;priority&quot;)
+grInc.addAggregate(&quot;AVG&quot;, &quot;reassignment_count&quot;)
+grInc.addAggregate(&quot;AVG&quot;, &quot;sys_mod_count&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(
+    &quot;Incidents with priority {0} had {1} average modifications and {2} average reassignments&quot;,
+    [
+      grInc.priority.getDisplayValue(),
+      grInc.getAggregate(&quot;AVG&quot;, &quot;sys_mod_count&quot;),
+      grInc.getAggregate(&quot;AVG&quot;, &quot;reassignment_count&quot;),
+    ]
+  )
+}
+</code></pre>
+<p><img src="./images/30.png" alt="30" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/31.png" alt="31" /></p>
+<h4 id="addhaving"><a class="header" href="#addhaving">addHaving()</a></h4>
+<p>    addHaving() adds a &quot;having&quot; element to the aggregate. This method is extermely useful when you want to trigger something if record count crosses the defined threshold or to find duplicate records. You can find the awesome post on snprotips blog by Tim Woodruff <a href="https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html">here</a> regarding same.</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.groupBy(&quot;priority&quot;)
+grInc.addAggregate(&quot;COUNT&quot;, &quot;sys_mod_count&quot;)
+grInc.addHaving(&quot;COUNT&quot;, &quot;sys_mod_count&quot;, &quot;&gt;&quot;, &quot;10&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;Incidents with priority {0} had {1} total modifications&quot;, [
+    grInc.priority.getDisplayValue(),
+    grInc.getAggregate(&quot;COUNT&quot;, &quot;sys_mod_count&quot;),
+  ])
+}
+</code></pre>
+<p><img src="./images/32.png" alt="32" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/33.png" alt="33" /></p>
+<p>    The above script outputs the total number of times particular priority incidents modified, if modification count is greater than 10. Feel free to change the value to something less like 1 or more like 30 and re-execute the script to observe the output.</p>
+<h4 id="addtrend"><a class="header" href="#addtrend">addTrend()</a></h4>
+<p>    addTrend() method adds a trend for a field. Let us modify the script to display number of incidents by months.</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.addTrend(&quot;opened_at&quot;, &quot;month&quot;)
+grInc.addAggregate(&quot;COUNT&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;{0}: {1}&quot;, [grInc.getValue(&quot;timeref&quot;), grInc.getAggregate(&quot;COUNT&quot;)])
+}
+</code></pre>
+<p><img src="./images/34.png" alt="34" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/35.png" alt="35" /></p>
+<h4 id="getquery"><a class="header" href="#getquery">getQuery()</a></h4>
+<p>    getQuery() method retrieves the query necessary to return the current aggregate.</p>
+<ul>
+<li>Copy the below script to scripts - background, and click <strong>Run script</strong> button:</li>
+</ul>
+<pre><code class="language-js">var grInc = new GlideAggregate(&quot;incident&quot;)
+grInc.addTrend(&quot;opened_at&quot;, &quot;month&quot;)
+grInc.addAggregate(&quot;COUNT&quot;)
+grInc.query()
+while (grInc.next()) {
+  gs.info(&quot;{0}: {1}, Query: {2}&quot;, [
+    grInc.getValue(&quot;timeref&quot;),
+    grInc.getAggregate(&quot;COUNT&quot;),
+    grInc.getQuery(),
+  ])
+}
+</code></pre>
+<p><img src="./images/36.png" alt="36" /></p>
+<ul>
+<li>You should see the output similar to the following:</li>
+</ul>
+<p><img src="./images/37.png" alt="37" /></p>
+<hr />
+<h3 id="how-can-you-learn-more"><a class="header" href="#how-can-you-learn-more">How can you learn more?</a></h3>
+<p>    The best way to learn anything is hands-on exercises. Here is some of the resources which will help provide examples and use cases to furthur enhance your understanding:</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=KmxsVbnAHxk">Observations When Using GlideAggregate with Steven Bell</a></li>
+<li><a href="https://community.servicenow.com/community?id=community_article&amp;sys_id=4184de51db982348a39a0b55ca961960">Community Code Snippets: Pondering the GlideAggregate Object (Advanced) by Steven Bell</a></li>
+<li><a href="https://developer.servicenow.com/blog.do?p=/post/glideaggregate/">Understanding GlideAggregate by Andrew Barnes</a></li>
+<li><a href="https://developer.servicenow.com/blog.do?p=/post/training-glideagg/">Counting with GlideAggregate by Ben Sweetser</a></li>
+<li><a href="https://snprotips.com/blog/rvicenowprotips.com/2015/12/detecting-duplicate-records-with.html">Detecting Duplicate Records with GlideAggregate by Tim Woodruff</a></li>
+<li><a href="https://support.servicenow.com/kb?id=kb_article_view&amp;sysparm_article=KB0745198">How to get the Top 10 values from a table using the GlideAggregate function</a></li>
+<li><a href="https://developer.servicenow.com/dev.do#!/reference/api/sandiego/server_legacy/c_GlideAggregateAPI">ServiceNow API documentation</a></li>
+<li><a href="https://docs.servicenow.com/bundle/sandiego-application-development/page/app-store/dev_portal/API_reference/GlideAggregate/concept/c_GlideAggregateAPI.html">ServiceNow product documentation</a></li>
+<li><a href="https://garrettnow.com/2014/02/28/glideaggregate-examples/">GlideAggregate Examples by GarrettNow</a></li>
+<li><a href="https://www.thiscodeworks.com/find-duplicate-user-email-or-anything-else-blogs-blog-servicenow-community-servicenow-javascript-duplicate/601038407a4fe30014436f5b">Find duplicate user email (or anything else)</a></li>
+<li><a href="https://www.learnnowlab.com/advance-glide-script/">Advance glide script in ServiceNow</a></li>
+<li><a href="https://snowunderground.com/blog/tag/glideaggregate">Faster API than GlideRecord?</a></li>
+<li><a href="https://finite-partners.com/byte-2-glideaggregate-examples/">GlideAggregate Examples</a></li>
+<li><a href="https://pathwayscg.com/easily-identifying-duplicate-records-in-servicenow/">Easily identifying duplicate records in ServiceNow</a></li>
+<li><a href="http://snowscrip.blogspot.com/2019/03/background-scripts.html">Background Scripts by snowscrip</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="cover.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="glideexcelparser.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="cover.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="glideexcelparser.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

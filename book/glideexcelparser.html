@@ -1,0 +1,1256 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>GlideExcelParser - You don&#x27;t know ServiceNow APIs</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="cover.html">You don't know ServiceNow APIs</a></li><li class="chapter-item expanded affix "><li class="part-title">Index</li><li class="chapter-item expanded "><a href="glideaggregate.html"><strong aria-hidden="true">1.</strong> GlideAggregate</a></li><li class="chapter-item expanded "><a href="glideexcelparser.html" class="active"><strong aria-hidden="true">2.</strong> GlideExcelParser</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">You don&#x27;t know ServiceNow APIs</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="glideexcelparser"><a class="header" href="#glideexcelparser">GlideExcelParser</a></h1>
+<p>    Recently, we did recieve a requirement to build a catalog item for Asset managers, to auto-import asset information in the platform based on attached excel sheet. Additionally, we had to reject the request if the data is missing or does not have referenced records available yet in the system.</p>
+<p>    While exploring a bit, I found this amazing API called <strong>GlideExcelParser</strong> documented <a href="https://developer.servicenow.com/dev.do#!/reference/api/quebec/server/GEPS-setNullToEmpty_B">here</a>. If you haven't used it yet like me, Let's explore together.</p>
+<p>    If you are not a nerdy kind of guy, who can read the whole big article below; you might want to check short youtube video <a href="https://www.youtube.com/watch?v=PSgv9I05k98">GlideExcelParser by Saikiran Guduri</a> instead.</p>
+<h2 id="what-is-glideexcelparser"><a class="header" href="#what-is-glideexcelparser">What is GlideExcelParser</a></h2>
+<p>    <code>GlideExcelParser</code> parses <code>.xlsx</code> formatted Excel files and access file data in a script.
+Although, GlideExcelParser methods can be used in both global and scoped scripts, you need to use the <code>sn_impex</code> namespace identifier to create a GlideExcelParser object.</p>
+<p>    What it means is, to creates an instance of GlideExcelParser, we need to use the following syntax:</p>
+<pre><code class="language-javascript">var parser = new sn_impex.GlideExcelParser();
+</code></pre>
+<h3 id="creating-a-demo-data-sheet"><a class="header" href="#creating-a-demo-data-sheet">Creating a demo data sheet</a></h3>
+<p>    Though, ServiceNow documentation is very clear and pretty self-explanatory (along with the awesome, easy to understand examples), what lacks for this API documentation is a demo data sheet to visualize it better. So before proceeding furthur, Let's create a demo data sheet for ourselves:</p>
+<ul>
+<li>
+<p>Navigate to <strong>All &gt; Asset &gt; Portfolios &gt; All Assets</strong>.
+<img src="./images2/2022-11-19%2010_23_47-Assets%20_%20ServiceNow.png" alt="1" /></p>
+</li>
+<li>
+<p>Open the condition builder by clicking the <strong>show/hid filter icon</strong>; Build a condition as shown below and Click <strong>Run</strong> to apply the filter.
+<img src="./images2/2022-11-19%2010_27_55-Assets%20_%20ServiceNow.png" alt="2" /></p>
+</li>
+<li>
+<p>Click the <strong>personalize list icon</strong> in the upper left corner.
+<img src="./images2/2022-11-19%2010_29_43-Assets%20_%20ServiceNow.png" alt="3" /></p>
+</li>
+<li>
+<p>Remove the columns <strong>Assigned to</strong> and <strong>Configuration item</strong>.
+<img src="./images2/2022-11-19%2010_32_38-Assets%20_%20ServiceNow.png" alt="4" /></p>
+</li>
+<li>
+<p>To export a list report as an Excel spreadsheet, right-click any column heading and select <strong>Export &gt; Excel</strong>.
+<img src="./images2/2022-11-19%2010_36_34-Assets%20_%20ServiceNow.png" alt="5" />
+<img src="./images2/2022-11-19%2010_36_05-Assets%20_%20ServiceNow.png" alt="6" /></p>
+</li>
+<li>
+<p>Click <strong>Download</strong>.
+<img src="./images2/2022-11-19%2010_39_00-Assets%20_%20ServiceNow.png" alt="7" /></p>
+</li>
+<li>
+<p>Open the downloaded excel sheet.
+<img src="./images2/2022-11-19%2010_40_22-Assets%20_%20ServiceNow.png" alt="8" /></p>
+</li>
+<li>
+<p>Notice the column headings.
+<img src="./images2/2022-11-19%2010_45_04-glideexcelparser.html" alt="9" /></p>
+</li>
+<li>
+<p>Let us apply some formatting to the excel sheet. However, it is not manadatory.
+<img src="./images2/2022-11-19%2010_50_31-glideexcelparser.html" alt="10" /></p>
+</li>
+</ul>
+<p>    I have marked <strong>Asset tag</strong> as Yellow to indicate it is a mandatory field. similarly, <strong>Model category</strong>, <strong>Display name</strong> (indicating Model) &amp; <strong>Company</strong> are marked in Red to indicate they are both mandatory and reference fields. <strong>State</strong>, <strong>Substate</strong> &amp; <strong>Cost</strong> are not mandatory and hence marked in Green.</p>
+<h3 id="creating-a-fix-script"><a class="header" href="#creating-a-fix-script">Creating a fix script</a></h3>
+<p>    It is not necessary to create a fix script for our use case. But, it is always a good idea to test if our code is working as expected. And Fix script always seems to be a better choice than Background script cause of it's capabilities. Also, In order to test our APIs with the demo sheet that we did create, It needs to be in the platform as an attachment. Fix script can also solve that purpose in this case. </p>
+<p>    If you haven't work with fix script earlier, please go and check out <a href="https://www.youtube.com/watch?v=wI_MovVDRLg">Community Live Stream - Topical Deep Dive - Fix scripts</a> by Chuck Tomasi. If you did, let's go ahead and create a fix script and attach our demo sheet to it:</p>
+<ul>
+<li>
+<p>Navigate to <strong>All &gt; System Definition &gt; Fix Scripts</strong> &amp; Click <strong>New</strong>.
+<img src="./images2/fix_script_1.png" alt="11" /></p>
+</li>
+<li>
+<p>Provide some meaningful <strong>Name</strong> &amp; <strong>Description</strong> and Click <strong>Submit</strong>.
+<img src="./images2/fix_script_2.png" alt="12" /></p>
+</li>
+<li>
+<p>You will be redirected back to list view. <strong>Open</strong> the recently created fix script.
+<img src="./images2/fix_script_3.png" alt="13" /></p>
+</li>
+<li>
+<p>Click the <strong>attachments icon</strong>.
+<img src="./images2/fix_script_4.png" alt="14" /></p>
+</li>
+<li>
+<p>Click <strong>Choose Files</strong> or <strong>Browse</strong>, depending on your browser, and navigate to a file. Then, Click <strong>Attach</strong>.
+<img src="./images2/fix_script_5.png" alt="15" /></p>
+</li>
+<li>
+<p>Notice that our demo data sheet appears in the Current file attachments list; Close the dialog box.
+<img src="./images2/fix_script_6.png" alt="16" /></p>
+</li>
+<li>
+<p>Our demo data sheet also appears at the top of the form.
+<img src="./images2/fix_script_7.png" alt="17" /></p>
+</li>
+</ul>
+<h3 id="testing-glideexcelparser-apis"><a class="header" href="#testing-glideexcelparser-apis">Testing GlideExcelParser APIs</a></h3>
+<p>    Now that we have our Fix script and demo data sheet attached to it, we are good to explore GlideExcelParser APIs. But, the very first thing that we need to test our APIs is the SysID of our demo data sheet attachment. Let's write the below code to our fix script to fetch the attachment SysID:</p>
+<pre><code class="language-javascript"><span class="boring">Get attachment SysID
+</span>
+var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+gs.info(&quot;attachmentSysID: &quot; + attachmentSysID);
+</code></pre>
+<p>    You should replace the value of <code>tableSysID</code> by SysID of your fix script. Right click on the form header and click <code>Save</code> to save your code.</p>
+<p><img src="./images2/code1.png" alt="code1" /></p>
+<p>    To test if we are getting the SysID of our attachment, Click <code>Run Fix Script</code> button on the header and then select <code>Proceed</code>.</p>
+<p><img src="./images2/code2.png" alt="code2" />
+<img src="./images2/code3.png" alt="code3" /></p>
+<p>    As soon as the code finishes execution, we can see the output with the SysID of our attachment returned. Click <code>Close</code> to close the dialog window.</p>
+<p><img src="./images2/code4.png" alt="code4" /></p>
+<h4 id="glidesysattachment-getcontentstream"><a class="header" href="#glidesysattachment-getcontentstream">GlideSysAttachment getContentStream()</a></h4>
+<p>    <code>getContentStream()</code> function of <code>GlideSysAttachment</code> accepts attachment <code>sys_id</code> as a parameter and returns a <code>GlideScriptableInputStream</code> object given the sys_id of an attachment that contains the content of an attachment. GlideSysAttachment APIs is a separate topic of discussion and we might talk about it in future articles, but for now, let us add following lines at the end of our script:</p>
+<pre><code class="language-javascript">var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+gs.info('Attachment content stream: ' + attachmentStream);
+</code></pre>
+<p><img src="./images2/code5.png" alt="code5" /></p>
+<p>    After executing the code again, you should get output similar to this:</p>
+<p><img src="./images2/code6.png" alt="code6" /></p>
+<h4 id="parse"><a class="header" href="#parse">parse()</a></h4>
+<p>    In order to parse our demo data sheet we can use <code>parse()</code> function, that parses an XLSX-formatted Excel document provided as an input stream. let us add following lines at the end of our script:</p>
+<pre><code class="language-javascript">var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+gs.info(&quot;typeof parser: &quot;+typeof parser);
+gs.info(&quot;parser: &quot;+parser);
+
+</code></pre>
+<p><img src="./images2/code7.png" alt="code7" /></p>
+<p>    After executing the code again, you should get output similar to this:</p>
+<p><img src="./images2/code8.png" alt="code8" /></p>
+<p>    And since now we know that <code>parser</code> is an object of type <code>GlideExcelParser</code>, we can play with this.</p>
+<h4 id="getcolumnheaders"><a class="header" href="#getcolumnheaders">getColumnHeaders()</a></h4>
+<p>    <code>getColumnHeaders()</code> returns a list of column headers from the parsed document as an array of strings. In order to understand this better, let us comment the old log statements and add following lines at the end of our script:</p>
+<pre><code class="language-javascript">var headers = parser.getColumnHeaders();
+gs.info(&quot;headers: &quot; + headers);
+for (var i = 0; i &lt; headers.length; i++) {
+    gs.info(&quot;header &quot; + (i + 1) + &quot;: &quot; + headers[i]);
+}
+</code></pre>
+<p><img src="./images2/code9.png" alt="code9" /></p>
+<p>    After executing the code again, you should be able to see the list of all column headers from our attachments:</p>
+<p><img src="./images2/code10.png" alt="code10" />
+<img src="./images2/code11.png" alt="code11" /></p>
+<h4 id="getsheetnames"><a class="header" href="#getsheetnames">getSheetNames()</a></h4>
+<p>    <code>getSheetNames()</code> returns a list of all worksheet names, ordered as positioned from left to right in the workbook as an array of strings (including any worksheets marked as hidden). In order to understand this better, let us comment last four statements of our code and add following lines at the end of our script:</p>
+<pre><code class="language-javascript">var list_sheet_name = parser.getSheetNames();
+gs.info(&quot; Sheet Names: &quot; + list_sheet_name.join(&quot;, &quot;));
+for (var j = 0; j &lt; list_sheet_name.length; j++) {
+    gs.info(&quot;Sheet &quot; + (j + 1) + &quot;: &quot; + list_sheet_name[j]);
+}
+</code></pre>
+<p><img src="./images2/code12.png" alt="code12" /></p>
+<p>    After executing the code again, you should be able to see the list of all worksheets from our attachments. In our demo sheet there is only one worksheet and we can see it logged in our output:</p>
+<p><img src="./images2/code13.png" alt="code13" />
+<img src="./images2/code14.png" alt="code14" /></p>
+<h4 id="next--getrow"><a class="header" href="#next--getrow">next() &amp; getRow()</a></h4>
+<p>    Now that we know how to get all column names, lets find out how to retrieve the information for each row. Just like <code>GlideRecord</code>, <code>next()</code> in GlideExcelParser is also used to loop through each of the row in an object. However, It is <code>getRow()</code> that actually returns the current row values and headers as an object. <em>The row headers are stored as property names and the row values are stored as property values.</em></p>
+<p>    Let's see this in action by commenting last five statements of our code and add following lines at the end of our script:</p>
+<pre><code class="language-js">while (parser.next()) {
+    var row = parser.getRow();
+    gs.info(&quot;typeof row: &quot; + typeof row);
+    gs.info(&quot;row: &quot; + row);
+    gs.info(&quot;row: &quot; + JSON.stringify(row, null, 4));
+}
+</code></pre>
+<p><img src="./images2/code15.png" alt="code15" /></p>
+<p>    After executing the code again, you should get output similar to this:</p>
+<p><img src="./images2/code16.png" alt="code16" /></p>
+<p>    Since we know that <code>row</code> is an javascript object, with column headers as keys and cell data as property values. We can easily retrieve the the sheet data by modifying the code inside while loop as below:</p>
+<pre><code class="language-js">while (parser.next()) {
+    var row = parser.getRow();
+    //     gs.info(&quot;typeof row: &quot; + typeof row);
+    //     gs.info(&quot;row: &quot; + row);
+    //     gs.info(&quot;row: &quot; + JSON.stringify(row, null, 4));
+    var currentRowCellData = &quot;&quot;;
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + &quot;\t&quot;;
+    }
+    gs.info(&quot;currentRowCellData: &quot; + currentRowCellData);
+}
+</code></pre>
+<p><img src="./images2/code17.png" alt="code17" /></p>
+<p>    After executing the code again, you should get output with all the cell data from our demo data sheet:</p>
+<p><img src="./images2/code18.png" alt="code18" /></p>
+<h3 id="break-time"><a class="header" href="#break-time">Break Time</a></h3>
+<p>    Now that we have basic understanding of some of the APIs, It is good time to take a break and get back to our business requirement. Let us modify our code to check if any of the mandatory <code>Asset Tag</code>, <code>Model</code> or <code>Model category</code> is empty:</p>
+<pre><code class="language-js">var mandatoryHeaders = [&quot;Asset tag&quot;, &quot;Display name&quot;, &quot;Model category&quot;];
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info(&quot;No value provided for mandatory column: &quot; + currentHeader);
+        }
+
+    }
+}
+</code></pre>
+<p><img src="./images2/code19.png" alt="code19" /></p>
+<p>    If you have noticed already, I did remove all the comments from the code and modified the script within while loop to perform our validation for empty values of mandatory columns. And I have declared an additional array to store the mandatory column headers which has been used later in the loop. Here's how the whole script looks like:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = [&quot;Asset tag&quot;, &quot;Display name&quot;, &quot;Model category&quot;];
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info(&quot;No value provided for mandatory column: &quot; + currentHeader);
+        }
+
+    }
+}
+</code></pre>
+<p>    Now Let us modify our code to to add following lines to check if any of the mandatory <code>Model</code> or <code>Model category</code> is has a reference record existing in the system:</p>
+<p><img src="./images2/code20.png" alt="code20" /></p>
+<p>    Here's how the whole script looks like:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = [&quot;Asset tag&quot;, &quot;Display name&quot;, &quot;Model category&quot;];
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info(&quot;No value provided for mandatory column: &quot; + currentHeader);
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === &quot;NoReference&quot;) {
+            gs.info(&quot;Referenced value &quot; + row[currentHeader] + &quot; does not exist for mandatory column: &quot; + currentHeader);
+        }
+
+    }
+}
+
+function checkReference(cellHeader, cellData) {
+    if (cellHeader == &quot;Display name&quot;) {
+        var grModel = new GlideRecord(&quot;cmdb_model&quot;);
+        grModel.addQuery(&quot;display_name&quot;, cellData);
+        grModel.query();
+        if (!grModel.hasNext()) {
+            return &quot;NoReference&quot;;
+        }
+    }
+    if (cellHeader == &quot;Model category&quot;) {
+        var grModelCategory = new GlideRecord(&quot;cmdb_model_category&quot;);
+        grModelCategory.addQuery(&quot;name&quot;, cellData);
+        grModelCategory.query();
+        if (!grModelCategory.hasNext()) {
+            return &quot;NoReference&quot;;
+        }
+
+    }
+    return &quot;ReferencedRecordFound&quot;;
+}
+</code></pre>
+<p>    Let us introduce a new variable <code>rowNumber</code> for better logging as below:</p>
+<pre><code class="language-js">var rowNumber=1;
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info(&quot;Row &quot;+rowNumber+&quot;1 - No value provided for mandatory column: &quot; + currentHeader);
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === &quot;NoReference&quot;) {
+            gs.info(&quot;Row &quot;+rowNumber+&quot;1 - Referenced value &quot; + row[currentHeader] + &quot; does not exist for mandatory column: &quot; + currentHeader);
+        }
+
+    }
+ rowNumber++;
+}
+</code></pre>
+<p><img src="./images2/code21.png" alt="code21" /></p>
+<p>    Let us introduce another variable <code>insufficientData</code> to check if manadatory column is empty or reference does not exist:</p>
+<pre><code class="language-js">var insufficientData=&quot;FALSE&quot;;
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            gs.info(&quot;Row &quot;+rowNumber+&quot; - No value provided for mandatory column: &quot; + currentHeader);
+   insufficientData=&quot;TRUE&quot;;
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === &quot;NoReference&quot;) {
+            gs.info(&quot;Row &quot;+rowNumber+&quot; - Referenced value &quot; + row[currentHeader] + &quot; does not exist for mandatory column: &quot; + currentHeader);
+   insufficientData=&quot;TRUE&quot;;
+        }
+
+    }
+ rowNumber++;
+}
+</code></pre>
+<p><img src="./images2/code22.png" alt="code22" /></p>
+<p>    Before testing the code, we need to make two more changes for our use case. We will analyze the whole sheet for not sufficient data and will log the information only once. Let us modify the code one more time as below:</p>
+<p><img src="./images2/code23.png" alt="code23" /></p>
+<p>    Now our final code should look like this:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = [&quot;Asset tag&quot;, &quot;Display name&quot;, &quot;Model category&quot;];
+var rowNumber = 1;
+var insufficientData = &quot;FALSE&quot;;
+var incorrectDataLog = &quot;Incorrect Data: \n&quot;;
+while (parser.next()) {
+    var row = parser.getRow();
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            incorrectDataLog += &quot;Row &quot; + rowNumber + &quot; - No value provided for mandatory column: &quot; + currentHeader + &quot;\n&quot;;
+            insufficientData = &quot;TRUE&quot;;
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === &quot;NoReference&quot;) {
+            incorrectDataLog += &quot;Row &quot; + rowNumber + &quot; - Referenced value &quot; + row[currentHeader] + &quot; does not exist for mandatory column: &quot; + currentHeader + &quot;\n&quot;;
+            insufficientData = &quot;TRUE&quot;;
+        }
+
+    }
+    rowNumber++;
+}
+
+if (insufficientData !== &quot;TRUE&quot;) {
+    incorrectDataLog = &quot;CorrectData&quot;;
+}
+gs.info(incorrectDataLog);
+
+
+function checkReference(cellHeader, cellData) {
+    if (cellHeader == &quot;Display name&quot;) {
+        var grModel = new GlideRecord(&quot;cmdb_model&quot;);
+        grModel.addQuery(&quot;display_name&quot;, cellData);
+        grModel.query();
+        if (!grModel.hasNext()) {
+            return &quot;NoReference&quot;;
+        }
+    }
+    if (cellHeader == &quot;Model category&quot;) {
+        var grModelCategory = new GlideRecord(&quot;cmdb_model_category&quot;);
+        grModelCategory.addQuery(&quot;name&quot;, cellData);
+        grModelCategory.query();
+        if (!grModelCategory.hasNext()) {
+            return &quot;NoReference&quot;;
+        }
+
+    }
+    return &quot;ReferencedRecordFound&quot;;
+}
+</code></pre>
+<h4 id="creating-and-testing-invalid-demo-data"><a class="header" href="#creating-and-testing-invalid-demo-data">Creating and testing Invalid Demo Data</a></h4>
+<p>    Now that we have our code ready to be tested, we need a demo data sheet with some missing or incorrect information. Let's modify the original sheet by deleting some of the mandatory information:</p>
+<p><img src="./images2/test1.png" alt="test1" /></p>
+<p>    Next, remove the old attachment and replace it with new attachment having incorrect data:</p>
+<p><img src="./images2/test2.png" alt="test2" /></p>
+<p>    Executing the code again, should didplay the output like this:</p>
+<p><img src="./images2/test3.png" alt="test3" /></p>
+<p>    But if you are really paying an attention, you will notice that it is <code>Row 8</code> and not <code>Row 7</code> which is actually empty. Same applies for other rows. The reason for this is because the first row of excel is column headers and not actually a data. Let's fix it with just increasing the initial value of <code>rowNumber</code> by 1.</p>
+<p><img src="./images2/test4.png" alt="test4" /></p>
+<p>    Another thing that you should notice is, The API parses all the Rows in the sheet even if they are totally empty (E.g. Row 8). Unfortunately, there is no OOTB workaround for this issue available yet. You can read more about the issue <a href="https://support.servicenow.com/kb?id=kb_article_view&amp;sysparm_article=KB0693417">here</a>. Though, we can skip those rows with a little trick. Let us write an additional line of code in our script:</p>
+<p><img src="./images2/test5.png" alt="test5" /></p>
+<p>    At the end of this section, your final code should be somewhat similar to this:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+
+var headers = parser.getColumnHeaders();
+
+var mandatoryHeaders = [&quot;Asset tag&quot;, &quot;Display name&quot;, &quot;Model category&quot;];
+var rowNumber = 2;
+var insufficientData = &quot;FALSE&quot;;
+var incorrectDataLog = &quot;Incorrect Data: \n&quot;;
+while (parser.next()) {
+    var row = parser.getRow();
+
+    if (JSON.stringify(row, removeNullValues) === &quot;{}&quot;) {
+        continue;
+    }
+
+    for (var header in mandatoryHeaders) {
+        var currentHeader = mandatoryHeaders[header];
+
+        if (JSUtil.nil(row[currentHeader])) {
+            incorrectDataLog += &quot;Row &quot; + rowNumber + &quot; - No value provided for mandatory column: &quot; + currentHeader + &quot;\n&quot;;
+            insufficientData = &quot;TRUE&quot;;
+        }
+
+        if (checkReference(currentHeader, row[currentHeader]) === &quot;NoReference&quot;) {
+            incorrectDataLog += &quot;Row &quot; + rowNumber + &quot; - Referenced value &quot; + row[currentHeader] + &quot; does not exist for mandatory column: &quot; + currentHeader + &quot;\n&quot;;
+            insufficientData = &quot;TRUE&quot;;
+        }
+
+    }
+    rowNumber++;
+}
+
+function removeNullValues(key, value) {
+    if (value != null) {
+        return value;
+    }
+}
+
+if (insufficientData !== &quot;TRUE&quot;) {
+    incorrectDataLog = &quot;CorrectData&quot;;
+}
+gs.info(incorrectDataLog);
+
+
+function checkReference(cellHeader, cellData) {
+    if (cellHeader == &quot;Display name&quot;) {
+        var grModel = new GlideRecord(&quot;cmdb_model&quot;);
+        grModel.addQuery(&quot;display_name&quot;, cellData);
+        grModel.query();
+        if (!grModel.hasNext()) {
+            return &quot;NoReference&quot;;
+        }
+    }
+    if (cellHeader == &quot;Model category&quot;) {
+        var grModelCategory = new GlideRecord(&quot;cmdb_model_category&quot;);
+        grModelCategory.addQuery(&quot;name&quot;, cellData);
+        grModelCategory.query();
+        if (!grModelCategory.hasNext()) {
+            return &quot;NoReference&quot;;
+        }
+
+    }
+    return &quot;ReferencedRecordFound&quot;;
+}
+</code></pre>
+<p>    If you dont have any idea about how json works or why we have written the code, I highly recommend you to checkout my post on community - <a href="https://www.servicenow.com/community/developer-articles/integratenow-chapter-2-what-you-need-to-know-about-json-and/ta-p/2299591">What You Need To Know About JSON And Objects</a>.</p>
+<h3 id="building-a-data-source-and-transform-map"><a class="header" href="#building-a-data-source-and-transform-map">Building a Data Source and Transform Map</a></h3>
+<p>    So we have our script to validate the Excel sheet. But, we did not do anything for loading the excel data to the platform. Let's build a data source and transform map, which we can use later in our script to automate the process.</p>
+<ul>
+<li>
+<p>Navigate to <strong>All &gt; System Import Sets &gt; Administration &gt; Data Sources</strong> and Click <strong>New</strong>.
+<img src="./images2/import1.png" alt="import1" /></p>
+</li>
+<li>
+<p>Provide some meaningful <strong>Name</strong> &amp; <strong>Import set table label</strong>. Select other details as below before clicking <strong>Submit</strong>:</p>
+<ul>
+<li>Type: <strong>File</strong></li>
+<li>Format: <strong>Excel</strong></li>
+<li>Sheet number: <strong>1</strong></li>
+<li>Header row: <strong>1</strong></li>
+<li>File retrieval method: <strong>Attachment</strong></li>
+</ul>
+<p><img src="./images2/import2.png" alt="import2" /></p>
+</li>
+<li>
+<p>You will be navigated back to list view. Open the recently created Data source record.
+<img src="./images2/import3.png" alt="import3" /></p>
+</li>
+<li>
+<p>Add our demo sheet as an attachment to the current record.
+<img src="./images2/import4.png" alt="import4" /></p>
+</li>
+<li>
+<p>Click <strong>Test Load 20 Records</strong> related link at the bottom of the form.
+<img src="./images2/import5.png" alt="import5" /></p>
+</li>
+</ul>
+<p>    The <strong>Test Load 20 Records</strong> UI action is generally used to validate the records that you want to import without the initial intention of running a transformation map to the target table. This action sets the internal state of the import to Load, therefore the transformation map is skipped. There are two good articles regarding this on <a href="https://support.servicenow.com/kb?id=kb_article_view&amp;sysparm_article=KB0563963">NowSupport</a> &amp; <a href="https://www.servicenow.com/community/developer-blog/transforming-your-data-quot-load-all-records-quot-vs-quot-test/ba-p/2282437">Community</a> that you must read.</p>
+<ul>
+<li>
+<p>Once data is loaded, click the <strong>Create transform map</strong> link.
+<img src="./images2/import6.png" alt="import6" /></p>
+</li>
+<li>
+<p>Provide some meaningful <strong>Name</strong> and Select the <strong>Target table</strong> as <strong>Asset</strong>, then right click on the form header and select <strong>Save</strong>.
+<img src="./images2/import7.png" alt="import7" /></p>
+</li>
+<li>
+<p>Click the <strong>Auto Map Matching Fields</strong> Related Link for ServiceNow to attempt to match the staging table columns to the target table columns based on column name.
+<img src="./images2/import8.png" alt="import8" /></p>
+</li>
+<li>
+<p>Set the Coalesce value to true to use an <strong>Asset tag</strong> field to check for collisions.
+<img src="./images2/import9.png" alt="import9" /></p>
+</li>
+</ul>
+<p>    If a match is found using the coalesce fields, the target record is updated with the information imported from the staging table. If no match is found, a new record is inserted in the database. If no fields are coalesce fields, records are always inserted on import. You can read more about <a href="coalescing">coalescing</a> on developer portal.</p>
+<ul>
+<li>Note down the <strong>Import set table name</strong> from data source and <strong>SysID</strong> of recently created transform map for later reference (we need it!).
+<img src="./images2/script2.png" alt="script2" />
+<img src="./images2/script1.png" alt="script1" /></li>
+</ul>
+<p>    If you did not use data source or transform map earlier <a href="https://developer.servicenow.com/dev.do#!/learn/learning-plans/tokyo/new_to_servicenow/app_store_learnv2_importingdata_tokyo_importing_data_objectives">Importing Data</a> is a good place to start.</p>
+<h3 id="building-catalog-item-and-workflow"><a class="header" href="#building-catalog-item-and-workflow">Building Catalog item and Workflow</a></h3>
+<p>    Now that we have all pre-requisites (a validation script, a data source and a transform map), we can go ahead and create a Catalog item to realize our business requirement.</p>
+<ul>
+<li>
+<p>Navigate to <strong>Service Catalog &gt; Catalog Definition &gt; Maintain Items</strong> &amp; Click <strong>New</strong>.
+<img src="./images2/cat1.png" alt="cat1" /></p>
+</li>
+<li>
+<p>Provide some meaningful <strong>Name</strong>, <strong>Short Description</strong> &amp; <strong>Description</strong>. Select other details as below and <strong>Save</strong> the form:</p>
+<ul>
+<li>Catalogs: <strong>Technical Catalog</strong></li>
+<li>Category: <strong>Infrastructure</strong></li>
+<li>Fulfillment automation level: <strong>Fully automated</strong></li>
+</ul>
+<p><img src="./images2/cat2.png" alt="cat2" /></p>
+</li>
+<li>
+<p>Under <strong>Portal Settings</strong> section, Select <strong>Request method</strong> as <strong>Submit</strong> and mark <strong>Hide 'Add to Wish List'</strong> &amp; <strong>Mandatory Attachment</strong> as checked.
+<img src="./images2/cat3.png" alt="cat3" /></p>
+</li>
+<li>
+<p>Under <strong>Process Engine</strong>, click the magnifying glass besides <strong>Workflow</strong> field.
+<img src="./images2/cat4.png" alt="cat4" /></p>
+</li>
+<li>
+<p>Click <strong>New</strong>
+<img src="./images2/cat5.png" alt="cat5" /></p>
+</li>
+<li>
+<p>Provide some meaningful <strong>Name</strong> and <strong>Description</strong> and click <strong>Submit</strong>.
+<img src="./images2/cat6.png" alt="cat6" /></p>
+</li>
+<li>
+<p>The new workflow is created with the Begin and End activities connected by a single transition.
+<img src="./images2/cat7.png" alt="cat7" /></p>
+</li>
+<li>
+<p>Switch to the <strong>Core</strong> tab in the Palette. <strong>Click, hold, and drag</strong> the <strong>Run Script</strong> activity onto the canvas. Hover the activity over a transition. When the transition turns blue, drop the activity.
+<img src="./images2/cat8.png" alt="cat8" /></p>
+</li>
+<li>
+<p>Add some meaningful <strong>Name</strong> and <strong>Stage</strong>. Then Copy the final fix script created in first step and paste here in the <strong>Script</strong> field.
+<img src="./images2/cat9.png" alt="cat9" /></p>
+</li>
+<li>
+<p>Change the values of variable <strong>tableName</strong> &amp; <strong>tableSysID</strong> as below:</p>
+</li>
+</ul>
+<pre><code class="language-js">var tableName = current.sys_class_name;
+var tableSysID = current.sys_id;
+</code></pre>
+<p><img src="./images2/cat10.png" alt="cat10" /></p>
+<ul>
+<li>Since we already know the list of mandatory columns to be validated; Let's remove the following line of code as we are not going to need it.</li>
+</ul>
+<pre><code class="language-js">var headers = parser.getColumnHeaders();
+</code></pre>
+<p><img src="./images2/cat11.png" alt="cat11" /></p>
+<ul>
+<li>Let's comment the log statements and add the following line of code at the end of the script, to store the additional comments in the scratchpad if data is not sufficient or incorrect. Then Click <strong>Submit</strong>.</li>
+</ul>
+<pre><code class="language-js">workflow.scratchpad.insufficient_data = insufficientData;
+workflow.scratchpad.incorrect_lata_log = incorrectDataLog;
+</code></pre>
+<p><img src="./images2/cat12.png" alt="cat12" /></p>
+<ul>
+<li>
+<p>Double click the <strong>If</strong> activity.
+<img src="./images2/cat13.png" alt="cat13" /></p>
+</li>
+<li>
+<p>Give some meaningful <strong>Name</strong> and <strong>Stage</strong>.
+<img src="./images2/cat14.png" alt="cat14" /></p>
+</li>
+<li>
+<p>Select the <strong>Advanced</strong> check box and add the following script to the <strong>Script</strong> before clicking <strong>Submit</strong>.</p>
+</li>
+</ul>
+<pre><code class="language-js">answer = ifScript();
+
+function ifScript() {
+    if (workflow.scratchpad.insufficient_data === &quot;TRUE&quot;) {
+        return 'yes';
+    }
+    return 'no';
+}
+</code></pre>
+<p><img src="./images2/cat15.png" alt="cat15" /></p>
+<ul>
+<li>
+<p>Next, Double click on <strong>Set Values</strong> activity and set the values as below, then click <strong>Submit</strong>:</p>
+<ul>
+<li>Name: <strong>Closed Incomplete</strong></li>
+<li>Stage: <strong>Completed</strong></li>
+<li>Set these values:
+<ul>
+<li>State: <strong>Closed inomplete</strong></li>
+<li>Additional comments: <strong>${workflow.scratchpad.incorrect_lata_log}</strong></li>
+</ul>
+</li>
+</ul>
+<p><img src="./images2/cat16.png" alt="cat16" /></p>
+</li>
+<li>
+<p>Similarly, Double click on <strong>Set Values</strong> activity again and set the values as below, then click <strong>Submit</strong>:</p>
+<ul>
+<li>Name: <strong>Closed complete</strong></li>
+<li>Stage: <strong>Completed</strong></li>
+<li>Set these values:
+<ul>
+<li>State: <strong>Closed complete</strong></li>
+</ul>
+</li>
+</ul>
+<p><img src="./images2/cat17.png" alt="cat17" /></p>
+</li>
+<li>
+<p>Finally, Double click the new <strong>Run script</strong> activity. Add the following script to the <strong>Script</strong> field:</p>
+</li>
+</ul>
+<pre><code class="language-js">//Create a Data Source and Copy an attachment from RITM to Data Source
+var donorTable = current.sys_class_name;
+var donorID = current.sys_id;
+
+var recipientTable = &quot;sys_data_source&quot;;
+
+var recipientTableGR = new GlideRecord(recipientTable);
+recipientTableGR.name = gs.getUserName() + &quot; UserImport at: &quot; + new GlideDateTime();
+recipientTableGR.import_set_table_name = 'u_auto_import_assets_data'; 
+recipientTableGR.file_retrieval_method = &quot;Attachment&quot;;
+recipientTableGR.type = &quot;File&quot;;
+recipientTableGR.format = &quot;Excel&quot;;
+recipientTableGR.header_row = 1;
+recipientTableGR.sheet_number = 1;
+
+var recipientID = recipientTableGR.insert(); //Need this since we want to load and transform directly
+
+GlideSysAttachment.copy(donorTable, donorID, recipientTable, recipientID);
+
+//Load the data from attachment to Staging table
+var dataSourceGR = new GlideRecord(&quot;sys_data_source&quot;);
+dataSourceGR.get(recipientID);
+var loader = new GlideImportSetLoader();
+var importSetRec = loader.getImportSetGr(dataSourceGR);
+var ranload = loader.loadImportSetTable(importSetRec, dataSourceGR);
+importSetRec.state = &quot;loaded&quot;;
+importSetRec.update();
+
+//Transform the data into system database
+var transformMapSysIDs = '1f25c5492f1f1110ccc9821df699b642';
+
+var transformWorker = new GlideImportSetTransformerWorker(importSetRec.sys_id, transformMapSysIDs);
+transformWorker.setBackground(true);
+transformWorker.start();
+</code></pre>
+<p>    For the sake of this article, I'm not going to explain the above script details. May be it could be a content for another article. But to be short we are loading the data from our sheet to import set table that we created and then transforming it to assets table. To understand better what is happening here, I encourage you to check teh youtube video <a href="https://www.youtube.com/watch?v=_NvSNzk1_Og">Upload data with an excel file and Record producer in ServiceNow by Göran Lundqvist</a>.</p>
+<ul>
+<li>
+<p>Don't forget to replace the <strong>Import set table name</strong> and <strong>Transform Map SysID</strong> noted from second step before clicking <strong>Submit</strong>:
+<img src="./images2/cat18.png" alt="cat18" />
+<img src="./images2/cat19.png" alt="cat19" /></p>
+</li>
+<li>
+<p>Now configure transitions for all activities as shown in the screenshot below:
+<img src="./images2/cat20.png" alt="cat20" /></p>
+</li>
+<li>
+<p>Let's navigate back to our catalog item window and select the newly created workflow and <strong>Update</strong> the catalog item.
+<img src="./images2/cat21.png" alt="cat21" /></p>
+</li>
+<li>
+<p>In order to see the Technical Catalog on our Service Portal, we need to do some additional configurations. Navigate to <strong>All &gt; Service Portal &gt; Portals</strong> &amp; Click the <strong>Service Portal</strong> record.
+<img src="./images2/cat23.png" alt="cat23" /></p>
+</li>
+<li>
+<p>In the Catalogs related list, click <strong>Edit</strong>.
+<img src="./images2/cat24.png" alt="cat24" /></p>
+</li>
+<li>
+<p>Select <strong>Technical Catalog</strong> to add to the portal and click <strong>Save</strong>
+<img src="./images2/cat25.png" alt="cat25" /></p>
+</li>
+</ul>
+<p>    Well we are done with our development and it is a time for unit testing:</p>
+<ul>
+<li>
+<p>Navigate to Service Portal and click <strong>Request Something</strong>.
+<img src="./images2/cat22.png" alt="cat22" /></p>
+</li>
+<li>
+<p>Now, we should be able to see our newly created catalog item under <strong>Infrastructure</strong> category of Technical Catalog. Click to <strong>open</strong> it.
+<img src="./images2/cat26.png" alt="cat26" /></p>
+</li>
+<li>
+<p>Add our incorrect demo data sheet as an attachment and click <strong>Submit</strong>.
+<img src="./images2/cat27.png" alt="cat27" /></p>
+</li>
+<li>
+<p>Click on the catalog item name on the Ticket summary form to see the additional comments with error logs:
+<img src="./images2/cat28.png" alt="cat28" />
+<img src="./images2/cat29.png" alt="cat29" /></p>
+</li>
+<li>
+<p>Perform another test with correct sheet to make sure that data is loaded correctly to asset table:
+<img src="./images2/cat30.png" alt="cat30" />
+<img src="./images2/cat31.png" alt="cat31" /></p>
+</li>
+</ul>
+<h3 id="times-up"><a class="header" href="#times-up">Time's up!</a></h3>
+<p>    So we have successfully fulfilled  our business requirement. For the sake of this article, we have done very basic configurations. But in real life scenerio, you might need to have error handling mechanism, additional approvals, user criterias etc. But we won't go to that. Now, it is time to go back to our GlideExcelParserAPIs.</p>
+<p>    Let us modify our incorrect demo data sheet before proceeding furthur. Add another sheet with some demo data. E.g.:</p>
+<p><img src="./images2/after1.png" alt="after1" /></p>
+<p>    Now navigate back to our fix script created in step one and replace the attachment with new updated sheet:</p>
+<p><img src="./images2/after2.png" alt="after2" /></p>
+<p>    Lets remove the entire code from line number 19, as we do not need it for furthur testing:</p>
+<p><img src="./images2/after3.png" alt="after3" /></p>
+<p>    Our new script now should look like this:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.parse(attachmentStream);
+</code></pre>
+<p><img src="./images2/after4.png" alt="after4" /></p>
+<h4 id="setsheetname--setsheetnumber"><a class="header" href="#setsheetname--setsheetnumber">setSheetName() &amp; setSheetNumber()</a></h4>
+<p>    <strong>setSheetName()</strong> sets the name of the sheet to be retrieved. Whereas, <strong>setSheetNumber()</strong> sets the number of the Excel sheet to be retrieved. However, It worths remembering that if both setSheetNumber() and setSheetName() are set, setSheetName() is used.</p>
+<p>    Add the following lines of code at the end of our sheet to retrive all sheet names:</p>
+<pre><code class="language-js">// Get the worksheet names to be parsed in the Excel document
+var list_sheet_name = parser.getSheetNames();
+
+gs.info(&quot; Sheet Names &quot; + list_sheet_name.join(&quot;, &quot;));
+</code></pre>
+<p><img src="./images2/after5.png" alt="after5" /></p>
+<p>    After executing the code, we should be able to see both of our the sheet names in the output:</p>
+<p><img src="./images2/after6.png" alt="after6" /></p>
+<p>    Now to test <strong>setSheetName</strong> first, Let's modify our code as below:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSource(attachmentStream);
+parser.setSheetName(&quot;Page 2&quot;);
+parser.parse();
+
+// Get the worksheet names to be parsed in the Excel document
+// var list_sheet_name = parser.getSheetNames();
+
+// gs.info(&quot; Sheet Names &quot; + list_sheet_name.join(&quot;, &quot;));
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = &quot;&quot;;
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + &quot;\t&quot;;
+    }
+    gs.info(&quot;currentRowCellData: &quot; + currentRowCellData);
+}
+</code></pre>
+<p><img src="./images2/after7.png" alt="after7" /></p>
+<p>    After executing the code, we should be able to see the data from sheet &quot;Page 2&quot; :</p>
+<p><img src="./images2/after8.png" alt="after8" /></p>
+<p>    If you are paying an attention so far, we have an additional method <strong>setSource</strong>  that we did not yet discussed and slightly different version of <strong>parse</strong> (without parameter); but they play very important role in this case. We will talk about them next, but first let test our next API i.e. <strong>setSheetNumber</strong>.</p>
+<p>    Let's modify our code to use <strong>setSheetNumber</strong> instead of <strong>setSheetName</strong>. Please note that 0 denotes sheet 1, 1 denotes sheet 2 &amp; so on...:</p>
+<pre><code class="language-js">parser.setSheetNumber(1);
+</code></pre>
+<p><img src="./images2/after9.png" alt="after9" /></p>
+<p>    After executing the code, we should be able to see the same output as above:</p>
+<p><img src="./images2/after10.png" alt="after10" /></p>
+<p>    It worth mentioning that, it is not necessary to use <strong>setSource</strong> and we can as well do it the old way as shown below:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSheetNumber(1); 
+parser.parse(attachmentStream);
+
+// Get the worksheet names to be parsed in the Excel document
+// var list_sheet_name = parser.getSheetNames();
+
+// gs.info(&quot; Sheet Names &quot; + list_sheet_name.join(&quot;, &quot;));
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = &quot;&quot;;
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + &quot;\t&quot;;
+    }
+    gs.info(&quot;currentRowCellData: &quot; + currentRowCellData);
+}
+</code></pre>
+<p><img src="./images2/after11.png" alt="after11" />
+<img src="./images2/after12.png" alt="after12" /></p>
+<h4 id="setsource"><a class="header" href="#setsource">setSource()</a></h4>
+<p>    <strong>setSource()</strong> defines an input source for parsing multiple times or parsing each worksheet in an Excel file.</p>
+<p>    E.g. In our demo sheet, we have two sheets &quot;Page 1&quot; &amp; &quot;Page 2&quot;. We can use <strong>setSource</strong> to parse an Excel file attachment multiple times to retrieve column headers and print values of each row for each worksheet.</p>
+<p>    Let's copy a part of code and paste it again at the end of the script and just change the sheet number. We will get some warnings as we are not following the coding best practices, but let's ignore them for a moment:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSource(attachmentStream);
+parser.setSheetNumber(1);
+parser.parse();
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = &quot;&quot;;
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + &quot;\t&quot;;
+    }
+    gs.info(&quot;currentRowCellData: &quot; + currentRowCellData);
+}
+
+parser.setSheetNumber(0);
+parser.parse();
+
+var headers = parser.getColumnHeaders();
+while (parser.next()) {
+    var row = parser.getRow();
+    var currentRowCellData = &quot;&quot;;
+    for (var header in headers) {
+        var currentHeader = headers[header];
+        currentRowCellData += row[currentHeader] + &quot;\t&quot;;
+    }
+    gs.info(&quot;currentRowCellData: &quot; + currentRowCellData);
+}
+</code></pre>
+<p><img src="./images2/after13.png" alt="after13" /></p>
+<p>    Observe that we did parse each of the sheet using same parser and were able to retrieve the data:</p>
+<p><img src="./images2/after14.png" alt="after14" /></p>
+<p>    Lets modify our code to be better and parse all sheet's data automatically:</p>
+<pre><code class="language-js">var attachmentSysID = &quot;&quot;;
+
+var tableName = &quot;sys_script_fix&quot;;
+var tableSysID = &quot;19932bfc2f971110ccc9821df699b692&quot;;
+
+var grAttachment = new GlideRecord(&quot;sys_attachment&quot;);
+grAttachment.addEncodedQuery(&quot;table_name=&quot; + tableName + &quot;^table_sys_id=&quot; + tableSysID);
+grAttachment.query();
+if (grAttachment.next()) {
+    attachmentSysID = grAttachment.getUniqueValue();
+}
+
+var attachment = new GlideSysAttachment();
+var attachmentStream = attachment.getContentStream(attachmentSysID);
+
+var parser = new sn_impex.GlideExcelParser();
+parser.setSource(attachmentStream);
+
+// Get the worksheet names to be parsed in the Excel document
+var list_sheet_name = parser.getSheetNames();
+gs.info(&quot; Sheet Names &quot; + list_sheet_name.join(&quot;, &quot;));
+
+// Iterate over each worksheet in the Excel workbook
+for (var i = 0; i &lt; list_sheet_name.length; i++) {
+
+    gs.info(&quot;Sheet name:    &quot; + list_sheet_name[i]);
+
+    // Set the worksheet name to be parsed
+    parser.setSheetName(list_sheet_name[i]);
+
+    parser.parse();
+
+    var headers = parser.getColumnHeaders();
+    while (parser.next()) {
+        var row = parser.getRow();
+        var currentRowCellData = &quot;&quot;;
+        for (var header in headers) {
+            var currentHeader = headers[header];
+            currentRowCellData += row[currentHeader] + &quot;\t&quot;;
+        }
+        gs.info(&quot;currentRowCellData: &quot; + currentRowCellData);
+    }
+
+}
+</code></pre>
+<p><img src="./images2/after15.png" alt="after15" /></p>
+<p>    Observe that we did parse each of the sheet using same parser and were able to retrieve the data:</p>
+<p><img src="./images2/after16.png" alt="after16" /></p>
+<p>    The best example for this API can be found at <a href="https://developer.servicenow.com/dev.do#!/reference/api/tokyo/server/sn_impex-namespace/GlideExcelParserScopedAPI#GEPS-setSource_O?navFilter=GlideExcelParser">Developer portal</a>, I encourage you to have a look at that.</p>
+<p>    The one of the important point to note here (and you might have already understood): we don't pass parameter to <strong>parse</strong> when used along with <strong>setSource</strong>.</p>
+<h4 id="setnulltoempty"><a class="header" href="#setnulltoempty">setNullToEmpty()</a></h4>
+<p>    <strong>setNullToEmpty()</strong> accepts one parameter which when true, return an empty value instead of null when an Excel cell is not present.</p>
+<p>    In our excel sheet there are certain cells that are empty and our script currently prints them as null:</p>
+<p><img src="./images2/after17.png" alt="after17" /></p>
+<p>    Lets add the following line of code to our script:</p>
+<pre><code class="language-js">parser.setNullToEmpty(true);
+</code></pre>
+<p><img src="./images2/parser18.png" alt="after18" /></p>
+<p>    Now, executing the script again should display empty value instead of null:</p>
+<p><img src="./images2/after19.png" alt="after19" /></p>
+<h4 id="close"><a class="header" href="#close">close()</a></h4>
+<p>    As name suggests, <strong>close()</strong> close the connection to the input stream and release the document.</p>
+<p>    All we need to do is just adding the following line at the end of the code:</p>
+<pre><code class="language-js">parser.close();
+</code></pre>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="glideaggregate.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="glideaggregate.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

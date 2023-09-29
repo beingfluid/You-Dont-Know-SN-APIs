@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>You don&#x27;t know ServiceNow APIs</title>
+        <title>You don&#x27;t know ServiceNow API</title>
         <meta name="robots" content="noindex" />
 
 
@@ -31,8 +31,6 @@
 
         <!-- Custom theme stylesheets -->
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     </head>
     <body>
     <div id="body-container">
@@ -137,7 +135,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">You don&#x27;t know ServiceNow APIs</h1>
+                    <h1 class="menu-title">You don&#x27;t know ServiceNow API</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -643,8 +641,8 @@ Although, GlideExcelParser methods can be used in both global and scoped scripts
 </ul>
 <h3 id="testing-glideexcelparser-apis"><a class="header" href="#testing-glideexcelparser-apis">Testing GlideExcelParser APIs</a></h3>
 <p>    Now that we have our Fix script and demo data sheet attached to it, we are good to explore GlideExcelParser APIs. But, the very first thing that we need to test our APIs is the SysID of our demo data sheet attachment. Let's write the below code to our fix script to fetch the attachment SysID:</p>
-<pre><code class="language-javascript"><span class="boring">Get attachment SysID
-</span>
+<pre><code class="language-javascript">//Get attachment SysID
+
 var attachmentSysID = &quot;&quot;;
 
 var tableName = &quot;sys_script_fix&quot;;
@@ -1593,6 +1591,22 @@ for (var i = 0; i &lt; list_sheet_name.length; i++) {
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 
@@ -1600,11 +1614,6 @@ for (var i = 0; i &lt; list_sheet_name.length; i++) {
             window.playground_copyable = true;
         </script>
 
-        <script src="ace.js"></script>
-        <script src="editor.js"></script>
-        <script src="mode-rust.js"></script>
-        <script src="theme-dawn.js"></script>
-        <script src="theme-tomorrow_night.js"></script>
 
         <script src="elasticlunr.min.js"></script>
         <script src="mark.min.js"></script>
@@ -1618,9 +1627,7 @@ for (var i = 0; i &lt; list_sheet_name.length; i++) {
 
         <script>
         window.addEventListener('load', function() {
-            MathJax.Hub.Register.StartupHook('End', function() {
-                window.setTimeout(window.print, 100);
-            });
+            window.setTimeout(window.print, 100);
         });
         </script>
 
